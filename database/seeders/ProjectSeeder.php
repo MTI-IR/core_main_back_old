@@ -25,7 +25,11 @@ class ProjectSeeder extends Seeder
             Project::factory(random_int(1, 10))->make()->each(function ($project, $key) use ($tag) {
                 $state_id = random_int(1, 32);
                 $project->state_id = $state_id;
-                $project->city_id = State::find($state_id)->cities()->first()->id;
+                $state = State::find($state_id);
+                $project->state_name = $state->name;
+                $city = $state->cities()->first();
+                $project->city_id = $city->id;
+                $project->city_name = $city->name;
                 $category_id = random_int(1, 3);
                 $project->category_id = $category_id;
                 $project->sub_category_id = Category::find($category_id)->sub_categories()->first()->id;

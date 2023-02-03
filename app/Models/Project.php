@@ -13,32 +13,32 @@ class Project extends Model
 
     public function state()
     {
-        $this->belongsTo(State::class);
+        return $this->belongsTo(State::class);
     }
     public function city()
     {
-        $this->belongsTo(City::class);
+        return $this->belongsTo(City::class);
     }
     public function tag()
     {
-        $this->belongsTo(Tag::class);
+        return $this->belongsTo(Tag::class);
     }
     public function category()
     {
-        $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class);
     }
     public function sub_category()
     {
-        $this->belongsTo(SubCategory::class);
+        return $this->belongsTo(SubCategory::class);
     }
     public function company()
     {
-        $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function user()
     {
-        $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
     public function permission()
     {
@@ -53,5 +53,16 @@ class Project extends Model
     public function getKeyType()
     {
         return 'string';
+    }
+
+
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
     }
 }

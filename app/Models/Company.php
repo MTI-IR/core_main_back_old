@@ -19,6 +19,23 @@ class Company extends Model
             $model->{$model->getKeyName()} = $model->{$model->getKeyName()} ?: (string) Str::orderedUuid();
         });
     }
+
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
+
+
+
+
+
+
+
+
     public function getIncrementing()
     {
         return false;

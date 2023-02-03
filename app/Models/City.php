@@ -11,7 +11,7 @@ class City extends Model
 
     public function state()
     {
-        $this->belongsTo(State::class);
+        return $this->belongsTo(State::class);
     }
     public function projects()
     {

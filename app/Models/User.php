@@ -7,16 +7,54 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
+
+    public function companies()
+    {
+        return $this->hasMany(Company::class);
+    }
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    public function tikets()
+    {
+        return $this->hasMany(Tiket::class);
+    }
+
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function getIncrementing()
     {
         return false;
@@ -50,14 +88,4 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-
-    public function companies()
-    {
-        return $this->hasMany(Company::class);
-    }
-    public function projects()
-    {
-        return $this->hasMany(Project::class);
-    }
 }

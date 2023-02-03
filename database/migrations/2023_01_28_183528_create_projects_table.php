@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('title');
             $table->longText('description');
             $table->longText('our_review')->nullable();
+            $table->string('state_name');
+            $table->string('city_name');
+            $table->string('summary')->nullable();
 
             $table->timestamp('show_time');
 
