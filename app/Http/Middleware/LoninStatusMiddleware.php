@@ -21,9 +21,15 @@ class LoninStatusMiddleware
         try {
             $token = ($request->header()["authorization"][0]);
         } catch (Throwable $e) {
-            return  response("token not found ", 404);
+            return response()->json([
+                "massage" => "Token is not found",
+                "status" => "404",
+            ], 404);
         }
-        if (!$token) return  response("token not found", 404);
+        if (!$token) return  response()->json([
+            "massage" => "Token is not found",
+            "status" => "404",
+        ], 404);
         $token = substr($token, 7);
         try {
             $userInfo = Redis::get($token);
@@ -32,9 +38,15 @@ class LoninStatusMiddleware
                 $request->attributes->add(['user' => $userInfo]);
                 return $next($request, 200);
             }
-            return response("token is invalid", 401);
+            return response()->json([
+                "massage" => "This token is not valid.",
+                "status" => "401",
+            ], 401);
         } catch (Throwable $e) {
-            return  response("token is invalid", 401);
+            return  response()->json([
+                "massage" => "This token is not valid.",
+                "status" => "401",
+            ], 401);
         }
     }
 }

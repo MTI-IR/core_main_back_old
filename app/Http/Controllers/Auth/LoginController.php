@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Auth\LoginResource;
+use App\Http\Resources\Auth\UserInfoResource;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
+use Throwable;
 
 class LoginController extends Controller
 {
@@ -18,10 +20,10 @@ class LoginController extends Controller
     {
         // dd($request);
         $data = $request->validate([
-            "email"     =>  "required|email",
+            "phone_number"     =>  "required|string",
             "password"  =>  "required|string|max:32"
         ]);
-        $user    =   User::where('email', '=',  $data["email"])->first();
+        $user    =   User::where('phone_number', '=',  $data["phone_number"])->first();
         // $user    =   DB::table('users')->select('id', 'name', 'email', 'phone_number', 'password')->where('email', '=',  $data["email"])->first();
         if (!$user) {
             return response()->json([
@@ -33,7 +35,7 @@ class LoginController extends Controller
                 "id" => $user->id,
                 "first_name" => $user->first_name,
                 "last_name" => $user->last_name,
-                "email" => $data["email"],
+                "email" => $user->email,
                 "phone_number" => $user->phone_number,
                 "host" => $request->header()['host'][0],
                 "login_time" => Carbon::now(),
@@ -73,6 +75,27 @@ class LoginController extends Controller
             return response()->json([
                 "error" => "username or password is incorrect"
             ], 404);
+        }
+    }
+    public function userInfo(Request $request)
+    {
+        $auth = $request->header('authorization');
+        try {
+            $token = substr($auth, 7);
+            $userInfo = Redis::get($token);
+            $userInfo = json_decode($userInfo);
+            if ($userInfo)
+                return new UserInfoResource($userInfo);
+            else
+                return response()->json([
+                    "massage" => "This token is not valid.",
+                    "status" => "401",
+                ], 401);
+        } catch (Throwable $e) {
+            return response()->json([
+                "massage" => "This token is not valid.",
+                "status" => "401",
+            ], 401);
         }
     }
 }
