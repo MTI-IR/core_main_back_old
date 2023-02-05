@@ -37,11 +37,10 @@ class ProjectsResource extends JsonResource
                 "sub_category_name" => SubCategory::findOrFail($project->sub_category_id)->name,
                 "category_id" => $project->category_id,
                 "sub_category_id" => $project->sub_category_id,
-                "summary" => $summary,
+                "description" => $project->description,
                 "images" => $project->images,
                 "permission_name" => $project->permission_name,
                 "show_time" => $project->show_time,
-                "created_at" => $project->created_at,
             ];
         };
         return $toReturn;

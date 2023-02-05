@@ -17,7 +17,7 @@ class ImageFactory extends Factory
     public function definition()
     {
         return [
-            "url" => fake()->url(),
+            "url" => fake()->imageUrl(),
         ];
     }
 }

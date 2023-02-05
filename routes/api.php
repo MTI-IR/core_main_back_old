@@ -31,4 +31,6 @@ Route::get('/project/{id}', [ProjectController::class, 'show']);
 
 
 Route::get('/states', [SiteInfoController::class, 'states']);
+Route::get('/categories', [SiteInfoController::class, 'categories']);
 Route::get('/state/{state_id}', [SiteInfoController::class, 'states']);
+Route::get('/subcategories', [SiteInfoController::class, 'subCategories']);

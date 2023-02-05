@@ -15,6 +15,10 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        Category::factory(7)->create();
+        $cats = ["انرژی", "معدن", "صنعت", "کشاورزی", "گردشگری", "حمل و نقل", "عمران"];
+        Category::factory(7)->make()->each(function ($category, $index) use ($cats) {
+            $category->name = $cats[$index];
+            $category->save();
+        });
     }
 }

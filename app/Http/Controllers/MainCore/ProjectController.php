@@ -5,7 +5,11 @@ namespace App\Http\Controllers\MainCore;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MainCore\ProjectResource;
 use App\Http\Resources\MainCore\ProjectsResource;
+use App\Models\Category;
+use App\Models\City;
 use App\Models\Project;
+use App\Models\State;
+use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -32,21 +36,17 @@ class ProjectController extends Controller
     }
     public function index(Request $request)
     {
-        // $category_id = $request->category_id;
-        // $sub_category_id = $request->sub_category_id;
-        // $searchBy = 'all';
-        // $searchValue = null;
         $category_id = $request->category_id ? $request->category_id : '';
         $sub_category_id = $request->sub_category_id ? $request->sub_category_id : '';
         $state_id = $request->state_id ? $request->state_id : '';
         $city_id = $request->city_id ? $request->city_id : '';
-        // if ($category_id != null) {
-        //     $searchBy = 'category_id';
-        // }
-        // if ($sub_category_id != null) {
-        //     $searchBy = 'sub_category_id';
-        //     $searchValue = $sub_category_id;
-        // }
+
+
+        $category_id = $request->category_name ? Category::where("name", $request->category_name)->first() : $category_id;
+        $sub_category_id = $request->sub_category_name ? SubCategory::where("name", $request->sub_category_name)->first() : $sub_category_id;
+        $state_id = $request->state_name ? State::where('name', $request->state_name) : $state_id;
+        $city_id = $request->city_name ? City::where("name", $request->city_name) : $city_id;
+        echo ($request->state_id);
         $user = $request->get('user');
         if (!$user) {
             $auth = $request->header('authorization');

@@ -19,7 +19,7 @@ class ImageSeeder extends Seeder
     public function run()
     {
         User::all()->each(function ($user) {
-            Image::factory(random_int(0, 5))->make()->each(function ($image, $index) use ($user) {
+            Image::factory(random_int(1, 5))->make()->each(function ($image, $index) use ($user) {
                 $image->imageable_id = $user->id;
                 $image->imageable_type = "App\Models\User";
                 $image->priority = $index;

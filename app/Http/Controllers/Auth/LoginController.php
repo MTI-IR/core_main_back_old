@@ -31,6 +31,11 @@ class LoginController extends Controller
             ], 404);
         }
         if (Hash::check($data["password"], $user->password)) {
+            $userImages = $user->images;
+            $images = [];
+            foreach ($user->images as $image) {
+                $images[$image->priority] = $image->url;
+            }
             $userInfo = [
                 "id" => $user->id,
                 "first_name" => $user->first_name,
@@ -40,6 +45,7 @@ class LoginController extends Controller
                 "host" => $request->header()['host'][0],
                 "login_time" => Carbon::now(),
                 'ip' => $request->ip(),
+                "images" => $images,
                 "permissions_via_roles" => $user->getPermissionsViaRoles(),
                 "all_permissions" => $user->getAllPermissions(),
                 "direct_permissions" => $user->getDirectPermissions(),
