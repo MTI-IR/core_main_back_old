@@ -32,7 +32,7 @@ class ProjectController extends Controller
             ->where("sub_category_id", "like", $sub_category_id . "%")
             ->where("city_id", "like", $city_id . "%")
             ->where("state_id", "like", $state_id . "%")
-            ->orderBy('show_time')->get());
+            ->orderBy('show_time', 'desc')->get());
     }
     public function index(Request $request)
     {
