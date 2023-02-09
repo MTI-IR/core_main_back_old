@@ -47,6 +47,8 @@ class ProjectResource extends JsonResource
             "company" => $company_to_return,
             "tags_name" => Tag::findOrFail($this->tag_id)->name,
             "images" => $this->images,
+            "permission_name" => $this->permission_name,
+            "tiket" => $this->tiket,
         ];
     }
 }

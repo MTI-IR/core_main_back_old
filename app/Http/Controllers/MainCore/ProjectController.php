@@ -10,6 +10,7 @@ use App\Models\City;
 use App\Models\Project;
 use App\Models\State;
 use App\Models\SubCategory;
+use App\Models\Tiket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -107,6 +108,20 @@ class ProjectController extends Controller
 
     public function show(Request $request, $id)
     {
+        $user = $request->get('user');
+        if (!$user) {
+            $auth = $request->header('authorization');
+            if ($auth) {
+                $token = $auth;
+                if ($token) {
+                    $token = substr($token, 7);
+                    $userInfo = Redis::get($token);
+                    if ($userInfo) {
+                        $user = json_decode($userInfo);
+                    }
+                }
+            }
+        }
         try {
             $project = Project::findOrFail($id);
             if ($project->show_time > now())
@@ -118,15 +133,42 @@ class ProjectController extends Controller
             foreach ($project->images as $image) {
                 $images[$image->priority] = $image->url;
             }
-            $project->permission_name = DB::table('permissions')
+            $permission = DB::table('permissions')
                 ->where('id', $project->permission_id)
-                ->first()->name;
+                ->first();
+            $project->permission_name = $permission->name;
+            $tiket = false;
+            if ($user) {
+                $userPermission = collect($user->all_permissions)->sortBy('priority');
+                $tiket = count(Tiket::where("user_id", $user->id)->where("project_id", $project->id)->get()) ? true : false;
+                if (count($userPermission) && $permission->priority <= $userPermission[0]->priority) {
+                    return response()->json([
+                        "massage" => "not allowd",
+                        "status" => 403,
+                    ], 403);
+                } else {
+                    if ($permission->priority > 0)
+                        return response()->json([
+                            "massage" => "not allowd",
+                            "status" => 403,
+                        ], 403);
+                }
+            } else {
+                if ($permission->priority > 0)
+                    return response()->json([
+                        "massage" => "not allowd",
+                        "status" => 403,
+                    ], 403);
+            }
+
+            $project->tiket = $tiket;
             $project->images = $images;
             return new ProjectResource($project);
         } catch (Throwable $e) {
             return response()->json([
                 "massage" => "There is no project whit this ID ",
                 "status" => 404,
+                "error" => $e,
             ], 404);
         }
     }

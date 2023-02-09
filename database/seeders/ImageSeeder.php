@@ -19,7 +19,7 @@ class ImageSeeder extends Seeder
     public function run()
     {
         User::all()->each(function ($user) {
-            Image::factory(random_int(1, 5))->make()->each(function ($image, $index) use ($user) {
+            Image::factory(random_int(5, 10))->make()->each(function ($image, $index) use ($user) {
                 $image->imageable_id = $user->id;
                 $image->imageable_type = "App\Models\User";
                 $image->priority = $index;
@@ -27,7 +27,7 @@ class ImageSeeder extends Seeder
             });
         });
         Company::all()->each(function ($company) {
-            Image::factory(random_int(0, 5))->make()->each(function ($image, $index) use ($company) {
+            Image::factory(random_int(4, 5))->make()->each(function ($image, $index) use ($company) {
                 $image->imageable_id = $company->id;
                 $image->imageable_type = "App\Models\Company";
                 $image->priority = $index;
@@ -35,7 +35,7 @@ class ImageSeeder extends Seeder
             });
         });
         Project::all()->each(function ($project) {
-            Image::factory(random_int(0, 5))->make()->each(function ($image, $index) use ($project) {
+            Image::factory(random_int(5, 10))->make()->each(function ($image, $index) use ($project) {
                 $image->imageable_id = $project->id;
                 $image->imageable_type = "App\Models\Project";
                 $image->priority = $index;
