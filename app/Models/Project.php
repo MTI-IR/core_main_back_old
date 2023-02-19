@@ -40,6 +40,32 @@ class Project extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function tikets()
+    {
+        return $this->hasMany(tiket::class);
+    }
+    public function users_tiket()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'tikets',
+            'project_id',
+            'user_id',
+        );
+    }
+    public function marks()
+    {
+        return $this->hasMany(Mark::class);
+    }
+    public function users_mark()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'tikets',
+            'project_id',
+            'user_id',
+        );
+    }
     public function permission()
     {
         $this->belongsTo(Permission::class);

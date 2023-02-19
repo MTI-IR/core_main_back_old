@@ -5,11 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tiket extends Model
+class Mark extends Model
 {
     use HasFactory;
-
-
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -17,9 +15,5 @@ class Tiket extends Model
     public function project()
     {
         return $this->belongsTo(Project::class);
-    }
-    public function time()
-    {
-        return $this->belongsTo(Time::class);
     }
 }

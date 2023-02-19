@@ -33,6 +33,31 @@ class User extends Authenticatable
         return $this->hasMany(Tiket::class);
     }
 
+    public function marks()
+    {
+        return $this->hasMany(Mark::class);
+    }
+
+    public function tiketProjects()
+    {
+        return $this->belongsToMany(
+            Project::class,
+            'tikets',
+            'user_id',
+            'project_id',
+        );
+    }
+
+    public function markProjects()
+    {
+        return $this->belongsToMany(
+            Project::class,
+            'marks',
+            'user_id',
+            'project_id',
+        );
+    }
+
     public function images()
     {
         return $this->morphMany(Image::class, 'imageable');

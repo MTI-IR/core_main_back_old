@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,10 +21,13 @@ return new class extends Migration
             $table->longText('description');
             $table->longText('our_review')->nullable();
             $table->string('state_name');
-            $table->string('city_name');
+            $table->string('city_name')->nullable();
             $table->string('summary')->nullable();
+            $table->bigInteger('price')->nullable();
 
-            $table->timestamp('show_time');
+
+            $table->boolean('validated')->default(false);
+            $table->timestamp('show_time')->default(Carbon::now()->addDays(7));
 
 
             $table->foreignId('state_id')->index()->constrained()->cascadeOnDelete();

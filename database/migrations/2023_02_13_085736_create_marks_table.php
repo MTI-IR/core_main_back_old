@@ -13,16 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tikets', function (Blueprint $table) {
+        Schema::create('marks', function (Blueprint $table) {
             $table->id();
-            $table->text('explanation')->nullable();
-            $table->boolean('checked')->default(false);
+            $table->timestamps();
             $table->foreignUuid('user_id')->index()->constrained()->cascadeOnDelete();;
             $table->foreignUuid('project_id')->index()->constrained()->cascadeOnDelete();
-            $table->foreignId('time_id')->index()->nullable()->constrained()->nullOnDelete();
-
-
-            $table->timestamps();
         });
     }
 
@@ -33,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tikets');
+        Schema::dropIfExists('marks');
     }
 };

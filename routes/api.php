@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\MainCore\ProjectController;
 use App\Http\Controllers\MainCore\SiteInfoController;
+use App\Http\Controllers\MainCore\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -32,5 +33,26 @@ Route::get('/project/{id}', [ProjectController::class, 'show']);
 
 Route::get('/states', [SiteInfoController::class, 'states']);
 Route::get('/categories', [SiteInfoController::class, 'categories']);
-Route::get('/state/{state_id}', [SiteInfoController::class, 'states']);
+Route::get('/cities', [SiteInfoController::class, 'cities']);
 Route::get('/subcategories', [SiteInfoController::class, 'subCategories']);
+
+
+Route::group([
+    'prefix' => 'user',
+    'middleware' => [
+        'loginStatus'
+    ]
+], function () {
+    Route::get('/companies', [UserController::class, 'companies']);
+    Route::post("/mark", [UserController::class, 'mark']);
+    Route::post("/unmark", [UserController::class, 'unMark']);
+    Route::get("/markprojects", [UserController::class, 'markProjects']);
+    Route::get("/tikets", [UserController::class, 'tikets']);
+    Route::post("/tiket", [UserController::class, 'tiket']);
+    Route::post("/untiket", [UserController::class, 'untiket']);
+    Route::get("/tiketprojects", [UserController::class, 'tiketProjects']);
+
+
+
+    Route::post("/test", [UserController::class, 'test']);
+});

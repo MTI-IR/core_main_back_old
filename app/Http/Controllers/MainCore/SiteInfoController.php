@@ -19,11 +19,12 @@ class SiteInfoController extends Controller
 
 
 
-    public function cities(Request $request, $state_id)
+    public function cities(Request $request)
     {
         try {
+            $state_id = $request->state_id;
             $state = State::findOrFail($state_id);
-            $cities = $state->cities()->orderBy('name', 'desc');
+            $cities = $state->cities()->orderBy('name', 'desc')->get();
             return new SiteInfoResource($cities);
         } catch (Throwable $e) {
             return response()->json([

@@ -7,6 +7,7 @@ use App\Http\Resources\MainCore\ProjectResource;
 use App\Http\Resources\MainCore\ProjectsResource;
 use App\Models\Category;
 use App\Models\City;
+use App\Models\Mark;
 use App\Models\Project;
 use App\Models\State;
 use App\Models\SubCategory;
@@ -138,9 +139,11 @@ class ProjectController extends Controller
                 ->first();
             $project->permission_name = $permission->name;
             $tiket = false;
+            $mark = false;
             if ($user) {
                 $userPermission = collect($user->all_permissions)->sortBy('priority');
                 $tiket = count(Tiket::where("user_id", $user->id)->where("project_id", $project->id)->get()) ? true : false;
+                $mark = count(Mark::where("user_id", $user->id)->where("project_id", $project->id)->get()) ? true : false;
                 if (count($userPermission) && $permission->priority <= $userPermission[0]->priority) {
                     return response()->json([
                         "massage" => "not allowd",
@@ -162,9 +165,11 @@ class ProjectController extends Controller
             }
 
             $project->tiket = $tiket;
+            $project->mark = $mark;
             $project->images = $images;
             return new ProjectResource($project);
         } catch (Throwable $e) {
+            return $e;
             return response()->json([
                 "massage" => "There is no project whit this ID ",
                 "status" => 404,

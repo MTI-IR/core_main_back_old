@@ -49,6 +49,7 @@ class ProjectResource extends JsonResource
             "images" => $this->images,
             "permission_name" => $this->permission_name,
             "tiket" => $this->tiket,
+            "mark" => $this->mark,
         ];
     }
 }
