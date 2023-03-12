@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('images', function (Blueprint $table) {
             $table->id();
 
-            $table->string('url');
+            $table->string('url')->index();
             $table->bigInteger('priority');
 
             $table->uuidMorphs('imageable');

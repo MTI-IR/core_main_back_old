@@ -11,6 +11,6 @@ class Time extends Model
 
     public function time()
     {
-        return $this->hasMany(Tiket::class);
+        return $this->hasMany(Ticket::class);
     }
 }

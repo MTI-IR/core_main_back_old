@@ -28,6 +28,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ImageSeeder::class);
         $this->call(DocumentSeeder::class);
         $this->call(TimeSeeder::class);
-        $this->call(TiketSeeder::class);
+        $this->call(TicketSeeder::class);
     }
 }

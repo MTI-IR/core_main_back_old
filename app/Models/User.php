@@ -28,9 +28,9 @@ class User extends Authenticatable
         return $this->hasMany(Project::class);
     }
 
-    public function tikets()
+    public function tickets()
     {
-        return $this->hasMany(Tiket::class);
+        return $this->hasMany(Ticket::class);
     }
 
     public function marks()
@@ -38,11 +38,11 @@ class User extends Authenticatable
         return $this->hasMany(Mark::class);
     }
 
-    public function tiketProjects()
+    public function ticketProjects()
     {
         return $this->belongsToMany(
             Project::class,
-            'tikets',
+            'tickets',
             'user_id',
             'project_id',
         );

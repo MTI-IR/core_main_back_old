@@ -19,11 +19,12 @@ return new class extends Migration
             $table->string('last_name')->index();
             $table->string('email')->unique()->nullable();
             $table->string('phone_number')->unique()->index();
-            $table->string('password');
+            $table->string('national_code')->nullable()->index();
+            $table->string('password')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('phone_number_verified_at')->nullable();
             $table->timestamp('last_edit')->nullable();
-            $table->string('national_code')->nullable()->index();
+            $table->boolean('validate')->default(false);
             $table->timestamps();
         });
     }

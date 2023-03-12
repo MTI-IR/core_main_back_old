@@ -11,7 +11,7 @@ use App\Models\Mark;
 use App\Models\Project;
 use App\Models\State;
 use App\Models\SubCategory;
-use App\Models\Tiket;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -34,6 +34,7 @@ class ProjectController extends Controller
             ->where("sub_category_id", "like", $sub_category_id . "%")
             ->where("city_id", "like", $city_id . "%")
             ->where("state_id", "like", $state_id . "%")
+            ->where("validated", 1)
             ->orderBy('show_time', 'desc')->get());
     }
     public function index(Request $request)
@@ -138,11 +139,13 @@ class ProjectController extends Controller
                 ->where('id', $project->permission_id)
                 ->first();
             $project->permission_name = $permission->name;
-            $tiket = false;
+            $ticket = false;
             $mark = false;
+            $edit_able = false;
             if ($user) {
+                if ($project->user_id == $user->id) $edit_able = true;
                 $userPermission = collect($user->all_permissions)->sortBy('priority');
-                $tiket = count(Tiket::where("user_id", $user->id)->where("project_id", $project->id)->get()) ? true : false;
+                $ticket = count(Ticket::where("user_id", $user->id)->where("project_id", $project->id)->get()) ? true : false;
                 $mark = count(Mark::where("user_id", $user->id)->where("project_id", $project->id)->get()) ? true : false;
                 if (count($userPermission) && $permission->priority <= $userPermission[0]->priority) {
                     return response()->json([
@@ -164,12 +167,12 @@ class ProjectController extends Controller
                     ], 403);
             }
 
-            $project->tiket = $tiket;
+            $project->ticket = $ticket;
+            $project->edit_able = $edit_able;
             $project->mark = $mark;
             $project->images = $images;
             return new ProjectResource($project);
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 "massage" => "There is no project whit this ID ",
                 "status" => 404,

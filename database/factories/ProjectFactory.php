@@ -25,6 +25,7 @@ class ProjectFactory extends Factory
             "description" => fake()->text(),
             "our_review" => fake()->text(),
             "show_time" => Carbon::now()->addDays(random_int(-3, 1)),
+            "validated" => 1,
         ];
     }
 }

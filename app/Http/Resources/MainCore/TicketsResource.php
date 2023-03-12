@@ -4,7 +4,7 @@ namespace App\Http\Resources\MainCore;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TiketsResource extends JsonResource
+class TicketsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,11 +16,11 @@ class TiketsResource extends JsonResource
     {
         $toReturn = [];
         $data = $this->resource;
-        foreach ($data as $tiket) {
+        foreach ($data as $ticket) {
             $toReturn[] = [
-                "id" => $tiket->id,
-                "created_at" => $tiket->created_at,
-                "project" => $tiket->project,
+                "id" => $ticket->id,
+                "created_at" => $ticket->created_at,
+                "project" => $ticket->project,
             ];
         }
         return $toReturn;

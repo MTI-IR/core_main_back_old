@@ -2,11 +2,10 @@
 
 namespace App\Http\Resources\MainCore;
 
-use App\Models\Company;
 use App\Models\Tag;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectResource extends JsonResource
+class UserProjectResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -41,6 +40,14 @@ class ProjectResource extends JsonResource
             "our_review" => $this->our_review,
             "state_name" => $this->state_name,
             "city_name" => $this->city_name,
+            "category_name" => $this->category_name,
+            "sub_category_name" => $this->sub_category_name,
+            "company_name" => $this->company_name,
+            "state_id" => $this->state_id,
+            "city_id" => $this->city_id,
+            "category_id" => $this->category_id,
+            "sub_category_id" => $this->sub_category_id,
+            "company_id" => $this->company_id,
             "summary" => $summary,
             "show_time" => $this->show_time,
             "user" => [
@@ -51,9 +58,7 @@ class ProjectResource extends JsonResource
             "company" => $company_to_return,
             "tags_name" => $tag,
             "images" => $this->images,
-            "permission_name" => $this->permission_name,
-            "ticket" => $this->ticket,
-            "mark" => $this->mark,
+            "price" => $this->price,
             "edit_able" => $this->edit_able,
         ];
     }

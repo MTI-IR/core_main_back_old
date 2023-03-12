@@ -5,12 +5,16 @@ namespace App\Http\Controllers\MainCore;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MainCore\ProjectsResource;
 use App\Http\Resources\MainCore\SiteInfoResource;
-use App\Http\Resources\MainCore\TiketsResource;
+use App\Http\Resources\MainCore\TicketsResource;
+use App\Http\Resources\mainCore\userInfoResource;
+use App\Models\Image;
 use App\Models\Mark;
 use App\Models\Project;
-use App\Models\Tiket;
+use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 class UserController extends Controller
@@ -72,7 +76,7 @@ class UserController extends Controller
 
 
 
-    public function tiket(Request $request)
+    public function ticket(Request $request)
     {
         $data = $request->validate([
             "project_id" => "required|string"
@@ -87,21 +91,21 @@ class UserController extends Controller
                 "status" => "404"
             ], 404);
         }
-        $tiketExist  = count(Tiket::where("user_id", $user->id)->where("project_id", $project_id)->get()) ? true : false;
-        if (!$tiketExist) {
-            $tiket = new Tiket();
-            $tiket->user_id = $user->id;
-            $tiket->project_id = $project_id;
-            $tiket->save();
+        $ticketExist  = count(Ticket::where("user_id", $user->id)->where("project_id", $project_id)->get()) ? true : false;
+        if (!$ticketExist) {
+            $ticket = new Ticket();
+            $ticket->user_id = $user->id;
+            $ticket->project_id = $project_id;
+            $ticket->save();
         }
         return response()->json([
-            "massage" => "tiket added",
+            "massage" => "ticket added",
             "status" => "200",
         ], 200);
     }
 
 
-    public function unTiket(Request $request)
+    public function unTicket(Request $request)
     {
         $data = $request->validate([
             "project_id" => "required|string"
@@ -116,12 +120,12 @@ class UserController extends Controller
                 "status" => "404"
             ], 404);
         }
-        $tiket = Tiket::where("user_id", $user->id)->where("project_id", $project_id)->first();
-        if ($tiket) {
-            $tiket->delete();
+        $ticket = Ticket::where("user_id", $user->id)->where("project_id", $project_id)->first();
+        if ($ticket) {
+            $ticket->delete();
         }
         return response()->json([
-            "massage" => "tiket removed",
+            "massage" => "ticket removed",
             "status" => "200",
         ], 200);
     }
@@ -147,15 +151,15 @@ class UserController extends Controller
     }
 
 
-    public function tiketProjects(Request $request)
+    public function ticketProjects(Request $request)
     {
         $user = $request->get("user");
         $user = User::findOrFail($user->id);
 
         $projects = [];
-        $tiketProjects = $user->tiketProjects;
-        if ($tiketProjects) {
-            foreach ($tiketProjects as $project) {
+        $ticketProjects = $user->ticketProjects;
+        if ($ticketProjects) {
+            foreach ($ticketProjects as $project) {
                 $images = [];
                 foreach ($project->images as $image) {
                     $images[$image->priority] = $image->url;
@@ -167,15 +171,68 @@ class UserController extends Controller
         return new ProjectsResource($projects);
     }
 
-    public function tikets(Request $request)
+    public function tickets(Request $request)
     {
         $user = $request->get("user");
         $user = User::findOrFail($user->id);
-        $tikets = $user->tikets;
-        foreach ($tikets as $tiket) {
-            $tiket->project = $tiket->project;
+        $tickets = $user->tickets;
+        foreach ($tickets as $ticket) {
+            $ticket->project = $ticket->project;
         }
-        return new TiketsResource($tikets);
+        return new ticketsResource($tickets);
+    }
+    public function userInfo(Request $request)
+    {
+        $userRedis = $request->get("user");
+        $user = User::findOrFail($userRedis->id);
+        return new userInfoResource($user);
+    }
+    public function editInfo(Request $request)
+    {
+        $data = $request->validate([
+            "first_name" => "required|string",
+            "last_name" => "required|string",
+            "national_code" => "required|digits:10",
+            "email" => "required|email",
+        ]);
+        try {
+            $userRedis = $request->get("user");
+            $user = User::findOrFail($userRedis->id);
+            $user->first_name = $data["first_name"];
+            $user->last_name = $data["last_name"];
+            $user->email = $data["email"];
+            if ($data["national_code"])
+                $user->national_code = $data["national_code"];
+            // $user->validate = false;
+            $newImage = $request->file("image");
+            if ($newImage) {
+                $images = Image::where('imageable_id', $user->id)->where('imageable_type', 'App\Models\User');
+                $images = $images->get();
+                foreach ($images as $i) {
+                    $i->delete();
+                    // Storage::delete(public_path('images',$image->url));
+                }
+                $filename = time() . $user->id . '.' . $newImage->getClientOriginalExtension();
+                $newImage->move(public_path('images'), $filename);
+                $image_url = "http://localhost:8000/images/" . $filename;
+                $image = $user->images()->make();
+                $image->priority = 0;
+                $image->url = $image_url;
+                $image->save();
+                $userRedis->images = [$image_url];
+                Redis::setex($userRedis->token, 43200,  json_encode($userRedis));
+            }
+            $user->save();
+            return response()->json([
+                "massage" => "user edited",
+                "status" => "200",
+            ], 200);
+        } catch (Throwable $e) {
+            return response()->json([
+                "massage" => "User not found",
+                "status" => "404",
+            ], 404);
+        }
     }
 
     public function companies(Request $request)

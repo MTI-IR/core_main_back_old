@@ -40,15 +40,15 @@ class Project extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function tikets()
+    public function tickets()
     {
-        return $this->hasMany(tiket::class);
+        return $this->hasMany(ticket::class);
     }
-    public function users_tiket()
+    public function users_ticket()
     {
         return $this->belongsToMany(
             User::class,
-            'tikets',
+            'tickets',
             'project_id',
             'user_id',
         );
@@ -61,7 +61,7 @@ class Project extends Model
     {
         return $this->belongsToMany(
             User::class,
-            'tikets',
+            'tickets',
             'project_id',
             'user_id',
         );

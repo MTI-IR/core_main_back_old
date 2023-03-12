@@ -58,7 +58,6 @@ class LoginController extends Controller
             }
             $sessions  = Redis::keys($userId . "*");
             $session = 0;
-            // dd($sessions);
             $sessonsCount = count($sessions);
             for ($i = 0; $i < $sessonsCount; $i++) {
                 if ($i != (int) substr($sessions[$i], 54, 6)) {
@@ -72,6 +71,7 @@ class LoginController extends Controller
                 $session = '0' . $session;
             }
             $token =  $userId  . '-' . $session . '-' .  $uuid;
+            $userInfo["token"] = $token;
             Redis::setex($token, 43200,  json_encode($userInfo));
             return new LoginResource([
                 "token" => $token,
