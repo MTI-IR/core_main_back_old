@@ -27,19 +27,16 @@ return new class extends Migration
 
 
             $table->boolean('validated')->default(false);
-            $table->timestamp('show_time')->default(Carbon::now()->addDays(7));
+            $table->timestamp('show_time')->default(Carbon::now()->addDays(7))->index();
 
 
             $table->foreignId('state_id')->index()->constrained()->cascadeOnDelete();
             $table->foreignId('city_id')->index()->constrained()->cascadeOnDelete();
             $table->foreignId('category_id')->index()->constrained()->cascadeOnDelete();
             $table->foreignId('sub_category_id')->index()->constrained()->cascadeOnDelete();
-            // $table->foreignId('category_id')->index()->constrained()->restrictOnDelete();
-            // $table->foreignId('sub_category_id')->index()->constrained('sub_categories')->restrictOnDelete();
             $table->foreignUuid('user_id')->index()->constrained()->cascadeOnDelete();
             $table->foreignUuid('company_id')->index()->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('permission_id')->index()->constrained()->cascadeOnDelete();
-            // $table->foreignId('permission_id')->index()->constrained()->restrictOnDelete();
             $table->foreignId("tag_id")->index()->nullable()->constrained()->cascadeOnDelete();
 
 

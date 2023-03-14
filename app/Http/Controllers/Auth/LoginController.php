@@ -46,6 +46,7 @@ class LoginController extends Controller
                 "login_time" => Carbon::now(),
                 'ip' => $request->ip(),
                 "images" => $images,
+                "validate" => $user->validate,
                 "permissions_via_roles" => $user->getPermissionsViaRoles(),
                 "all_permissions" => $user->getAllPermissions(),
                 "direct_permissions" => $user->getDirectPermissions(),

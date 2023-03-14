@@ -3,11 +3,18 @@
 namespace App\Http\Controllers\MainCore;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MainCore\ProjectsResource;
 use App\Http\Resources\MainCore\UserProjectResource;
+use App\Models\Category;
+use App\Models\City;
+use App\Models\Company;
 use App\Models\Image;
 use App\Models\Project;
+use App\Models\State;
+use App\Models\SubCategory;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -43,19 +50,42 @@ class UserProjectController extends Controller
             $newProject->id = $newId;
             $newProject->permission_id = 1;
             $newProject->title = $data["title"];
-            $newProject->price = $data["price"];
             $newProject->description = $data["description"];
-            $newProject->state_name = $data["state_name"];
-            $newProject->state_id = $data["state_id"];
-            $newProject->city_name = $data["city_name"];
-            $newProject->city_id = $data["city_id"];
-            $newProject->category_id = $data["category_id"];
-            $newProject->sub_category_id = $data["sub_category_id"];
-            $newProject->summary = $summary;
-            $newProject->company_id = $company_id;
             $newProject->user_id = $user->id;
             $newProject->validated = 1;
             $newProject->show_time = now();
+
+            $newProject->description = $data["description"];
+            $state = State::findOrFail($data["state_id"]);
+            $newProject->state()->dissociate();
+            $newProject->state()->associate($state);
+            $newProject->state_name = $state->name;
+
+            $city = City::findOrFail($data["city_id"]);
+            $newProject->city()->dissociate();
+            $newProject->city()->associate($city);
+            $newProject->city_name = $city->name;
+
+            $category = Category::findOrFail($data["category_id"]);
+            $newProject->category()->dissociate();
+            $newProject->category()->associate($category);
+
+            $sub_category = SubCategory::findOrFail($data["sub_category_id"]);
+            $newProject->sub_category()->dissociate();
+            $newProject->sub_category()->associate($sub_category);
+
+            if ($request->get('company_id') != null) {
+                echo ("company_id is : ");
+                echo ($request->get('company_id'));
+                $company = Company::findOrFail($request->get('company_id'));
+                if ($company) {
+                    $newProject->company()->dissociate();
+                    $newProject->company()->associate($company);
+                }
+            }
+            $newProject->summary = $summary;
+
+
 
             $imageFiles = $request->file("images");
             $images = [];
@@ -116,10 +146,7 @@ class UserProjectController extends Controller
 
         $company_id = null;
         $summary = null;
-        $price = null;
-        if ($request->get('company_id')) {
-            $company_id = $request->get('company_id');
-        }
+        $price = 0;
         if ($request->get('summary')) {
             $summary = $request->get('summary');
         }
@@ -128,17 +155,35 @@ class UserProjectController extends Controller
         }
         try {
             $project->title = $data["title"];
-            if ($price)
+            if ($price != null)
                 $project->price = $price;
             $project->description = $data["description"];
-            $project->state_name = $data["state_name"];
-            $project->state_id = $data["state_id"];
-            $project->city_name = $data["city_name"];
-            $project->city_id = $data["city_id"];
-            $project->category_id = $data["category_id"];
-            $project->sub_category_id = $data["sub_category_id"];
+            $state = State::findOrFail($data["state_id"]);
+            $project->state()->dissociate();
+            $project->state()->associate($state);
+            $project->state_name = $state->name;
+
+            $city = City::findOrFail($data["city_id"]);
+            $project->city()->dissociate();
+            $project->city()->associate($city);
+            $project->city_name = $city->name;
+
+            $category = Category::findOrFail($data["category_id"]);
+            $project->category()->dissociate();
+            $project->category()->associate($category);
+
+            $sub_category = SubCategory::findOrFail($data["sub_category_id"]);
+            $project->sub_category()->dissociate();
+            $project->sub_category()->associate($sub_category);
+
+            if ($request->get('company_id') != null) {
+                $company = Company::findOrFail($request->get('company_id'));
+                if ($company) {
+                    $project->company()->dissociate();
+                    $project->company()->associate($company);
+                }
+            }
             $project->summary = $summary;
-            $project->company_id = $company_id;
 
             $removedImages = $request->get("removed_images");
 
@@ -150,16 +195,19 @@ class UserProjectController extends Controller
                 $images = $images->get();
                 foreach ($images as $image) {
                     $image->delete();
-                    // Storage::delete(public_path('images',$image->url));
+                    if (file_exists(public_path('images') . substr($image->url, 28))) {
+                        File::delete(public_path('images') . substr($image->url, 28));
+                    }
                 }
             }
-
 
             $imageFiles = $request->file("images");
             $images = [];
             if ($imageFiles) {
+                $i = 0;
                 foreach ($imageFiles as $image) {
-                    $filename = time() . $project->id . '.' . $image->getClientOriginalExtension();
+                    $filename = time() . '--' . $i . '--' . $project->id . '.' . $image->getClientOriginalExtension();
+                    $i++;
                     $image->move(public_path('images'), $filename);
                     $images[] = "http://localhost:8000/images/" . $filename;
                 }
@@ -181,10 +229,7 @@ class UserProjectController extends Controller
                 "status" => "200"
             ], 200);
         } catch (Throwable $e) {
-            return response()->json([
-                "massage" => "error",
-                "status" => "500",
-            ], 500);
+            return response($e, 500);
         }
     }
 
@@ -227,6 +272,11 @@ class UserProjectController extends Controller
         }
     }
 
-    // show
+    public function userProjects(Request $request)
+    {
+        $user = $request->get('user');
+        $projects = User::findOrFail($user->id)->projects()->paginate(18, ['*'], 'page', 1);
+        return new ProjectsResource($projects);
+    }
     // destroy
 }

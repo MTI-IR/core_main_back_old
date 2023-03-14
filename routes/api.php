@@ -54,10 +54,11 @@ Route::group([
     Route::post("/ticket", [UserController::class, 'ticket']);
     Route::post("/unticket", [UserController::class, 'unticket']);
     Route::get("/ticketprojects", [UserController::class, 'ticketProjects']);
+    Route::get("/cancreate", [UserController::class, 'canCreateProject']);
+    Route::get("/projects", [UserProjectController::class, 'userProjects']);
 
 
-
-    Route::post("/test", [UserController::class, 'test']);
+    Route::post("/test", [UserProjectController::class, 'userProjects']);
 });
 Route::group([
     'prefix' => 'user/projects',

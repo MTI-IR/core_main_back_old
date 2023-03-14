@@ -35,7 +35,7 @@ class ProjectController extends Controller
             ->where("city_id", "like", $city_id . "%")
             ->where("state_id", "like", $state_id . "%")
             ->where("validated", 1)
-            ->orderBy('show_time', 'desc')->get());
+            ->orderBy('show_time', 'desc')->paginate(30, ['*'], 'page', 1));
     }
     public function index(Request $request)
     {

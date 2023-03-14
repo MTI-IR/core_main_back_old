@@ -201,7 +201,7 @@ class UserController extends Controller
             $user->first_name = $data["first_name"];
             $user->last_name = $data["last_name"];
             $user->email = $data["email"];
-            if ($data["national_code"])
+            if ($data["national_code"] && !$user->validate)
                 $user->national_code = $data["national_code"];
             // $user->validate = false;
             $newImage = $request->file("image");
@@ -220,6 +220,7 @@ class UserController extends Controller
                 $image->url = $image_url;
                 $image->save();
                 $userRedis->images = [$image_url];
+                $userRedis->validate = $user->validate;
                 Redis::setex($userRedis->token, 43200,  json_encode($userRedis));
             }
             $user->save();
@@ -241,5 +242,20 @@ class UserController extends Controller
         $user = User::findOrFail($user->id);
         $companies = $user->companies;
         return new SiteInfoResource($companies);
+    }
+    public function canCreateProject(Request $request)
+    {
+        $user = $request->get("user");
+        $user = User::findOrFail($user->id);
+        if ($user->validate) {
+            return response()->json([
+                'massage' => "This user can create project",
+                "status" => '200'
+            ], 200);
+        }
+        return response()->json([
+            'massage' => "This user can not create project",
+            "status" => '403'
+        ], 403);
     }
 }
