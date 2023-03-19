@@ -41,7 +41,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@master
         with:
-          php-version: 7.4
+          php-version: 8.1
           extension-csv: mbstring, bcmath
       - name: Composer install
         run: composer install --ignore-platform-reqs
@@ -70,7 +70,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@master
         with:
-          php-version: 7.4
+          php-version: 8.1
           extension-csv: mbstring, bcmath
       - name: Composer install
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
