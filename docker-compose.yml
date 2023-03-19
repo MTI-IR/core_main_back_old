@@ -1,27 +1,65 @@
-version: '2'
+version: '3'
 services:
-    web:
-        image: nginx:latest
-        ports:
-            - "8080:80"
-        volumes:
-            - ./:/var/www/test
-            - ./site.conf:/etc/nginx/conf.d/site.conf
-        links:
-            - php
-    php:
-        image: php:latest
-        volumes:
-            - ./:/var/www/mti_main_back
-            - ./php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
-        links:
-            - mysql
-    mysql:
-        image: mysql:5.7
-        platform: linux/amd64
-        environment:
-            - MYSQL_ROOT_PASSWORD=password
-            - MYSQL_DATABASE=mti_core_main
-            - MYSQL_USER=root
-            - MYSQL_PASSWORD=password
-            - MYSQL_ALLOW_EMPTY_PASSWORD=true
+
+  #Laravel App
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hakase-labs/laravel
+    container_name: app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www/html
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - mynet
+
+  #Nginx Service
+#   nginx:
+#     image: nginx:latest
+#     container_name: nginx
+#     restart: unless-stopped
+#     tty: true
+#     ports:
+#       - "8080:80"
+#       - "443:443"
+#     volumes:
+#       - ./:/var/www/html
+#       - ./nginx/conf.d/:/etc/nginx/conf.d/
+#       - ./nginx/ssl/:/etc/nginx/ssl/
+#     networks:
+#       - mynet
+
+  #MySQL Service
+  db:
+    image: mysql:5.7
+    container_name: db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: mti_core_main
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - mysqldata:/var/lib/mysql/
+    networks:
+      - mynet
+
+#Docker Networks
+networks:
+  mynet:
+    driver: bridge
+#Volumes
+volumes:
+  mysqldata:
+    driver: local
