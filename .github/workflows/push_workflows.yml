@@ -29,7 +29,7 @@ jobs:
   deploy-production:
     name: Deploy Project to PRODUCTION Server
     runs-on: ubuntu-latest
-    needs: [build-js-production, app-tests]
+    needs: [mti_main_core]
     if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v1
@@ -57,7 +57,7 @@ jobs:
   deploy-staging:
     name: Deploy Project to STAGING Server
     runs-on: ubuntu-latest
-    needs: [build-js-staging, app-tests]
+    needs: [build-js-staging, mti_main_core]
     if: github.ref == 'refs/heads/staging'
     steps:
       - uses: actions/checkout@v1
