@@ -30,17 +30,12 @@ task('deploy:secrets', function () {
     upload('.env', get('deploy_path') . '/shared');
 });
 
-host('myapp.io')
-    ->hostname('mtii.ir')
+host('mtii.ir')
     ->stage('production')
+    ->roles('mti_main_back')
     ->user('root')
-    ->set('deploy_path', '/var/www/my-app');
+    ->set('deploy_path', '/var/www/mti_main_back');
 
-host('staging.myapp.io')
-    ->hostname('mtii.ir')
-    ->stage('staging')
-    ->user('root')
-    ->set('deploy_path', '/var/www/my-app-staging');
 
 after('deploy:failed', 'deploy:unlock');
 
