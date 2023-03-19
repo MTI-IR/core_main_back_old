@@ -31,9 +31,9 @@ task('deploy:secrets', function () {
 });
 
 host('mtii.ir')
-    ->stage('production')
     ->roles('mti_main_back')
     ->user('root')
+    ->set('labels', ['stage' => 'prod'])
     ->set('deploy_path', '/var/www/mti_main_back');
 
 
