@@ -57,7 +57,7 @@ jobs:
   deploy-staging:
     name: Deploy Project to STAGING Server
     runs-on: ubuntu-latest
-    needs: [build-js-staging, mti_main_core]
+    needs: [mti_main_core]
     if: github.ref == 'refs/heads/staging'
     steps:
       - uses: actions/checkout@v1
