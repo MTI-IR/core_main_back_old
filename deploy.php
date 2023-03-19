@@ -15,7 +15,6 @@ add('writable_dirs', []);
 // Hosts
 
 host('mtii.ir')
-    ->hostname('mtii.ir')
     ->stage('production')
     ->user('root')
     ->set('labels', ['server_type' => 'app'])
