@@ -15,6 +15,7 @@ add('writable_dirs', []);
 // Hosts
 
 host('')
+    ->set('labels', ['server_type' => 'app'])
     ->set('remote_user', 'deployer')
     ->set('deploy_path', '~/mti_main_back');
 
