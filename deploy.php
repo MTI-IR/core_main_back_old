@@ -3,60 +3,34 @@
 namespace Deployer;
 
 require 'recipe/laravel.php';
-// require 'recipe/rsync.php';
+require 'contrib/php-fpm.php';
+require 'contrib/npm.php';
 
-set('application', 'My App');
-set('ssh_multiplexing', true);
+set('application', 'mti_main_core');
+set('repository', 'git@github.com:MTI-IR/core_main_back.git');
+set('php_fpm_version', '8.0');
 
-set('rsync_src', function () {
-    return __DIR__;
-});
-
-
-// add('rsync', [
-//     'exclude' => [
-//         '.git',
-//         '/.env',
-//         '/storage/',
-//         '/vendor/',
-//         '/node_modules/',
-//         '.github',
-//         'deploy.php',
-//     ],
-// ]);
-
-task('deploy:secrets', function () {
-    file_put_contents(__DIR__ . '/.env', getenv('DOT_ENV'));
-    upload('.env', get('deploy_path') . '/shared');
-});
-
-host('mtii.ir')
-    ->roles('mti_main_back')
-    ->user('root')
-    ->set('labels', ['stage' => 'prod'])
-    ->set('deploy_path', '/var/www/mti_main_back');
-
-
-after('deploy:failed', 'deploy:unlock');
-
-desc('Deploy the application');
+host('prod')
+    ->set('remote_user', 'root')
+    ->set('hostname', 'mti_main_core.ir')
+    ->set('deploy_path', '/var/www/{{hostname}}');
 
 task('deploy', [
-    'deploy:info',
     'deploy:prepare',
-    'deploy:lock',
-    'deploy:release',
-    // 'rsync',
-    'deploy:secrets',
-    'deploy:shared',
     'deploy:vendors',
-    'deploy:writable',
     'artisan:storage:link',
     'artisan:view:cache',
     'artisan:config:cache',
     'artisan:migrate',
-    'artisan:queue:restart',
-    'deploy:symlink',
-    'deploy:unlock',
-    'cleanup',
+    'npm:install',
+    'npm:run:prod',
+    'deploy:publish',
+    'php-fpm:reload',
 ]);
+
+task('npm:run:prod', function () {
+    cd('{{release_or_current_path}}');
+    run('npm run prod');
+});
+
+after('deploy:failed', 'deploy:unlock');
