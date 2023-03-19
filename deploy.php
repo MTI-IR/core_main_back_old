@@ -19,7 +19,7 @@ host('mtii.ir')
     ->user('root')
     ->set('labels', ['server_type' => 'app'])
     ->set('remote_user', 'deployer')
-    ->set('deploy_path', '~/mti_main_back');
+    ->set('deploy_path', 'var/www/html');
 
 // Hooks
 
