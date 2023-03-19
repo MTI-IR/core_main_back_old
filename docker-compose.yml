@@ -18,6 +18,7 @@ services:
             - mysql
     mysql:
         image: mysql:5.7
+        platform: linux/amd64
         environment:
             - MYSQL_ROOT_PASSWORD=password
             - MYSQL_DATABASE=mti_core_main
