@@ -10,17 +10,17 @@ services:
         links:
             - php
     php:
-        image: php:latest
+        image: php:7-fpm
         volumes:
-            - ./:/var/www
+            - ./:/var/www/test
             - ./php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
         links:
             - mysql
     mysql:
         image: mysql:5.7
         environment:
-            - MYSQL_ROOT_PASSWORD=password
-            - MYSQL_DATABASE=mti_core_main
+            - MYSQL_ROOT_PASSWORD=
+            - MYSQL_DATABASE=db_name
             - MYSQL_USER=root
-            - MYSQL_PASSWORD=password
+            - MYSQL_PASSWORD=
             - MYSQL_ALLOW_EMPTY_PASSWORD=true
