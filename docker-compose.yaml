@@ -1,0 +1,67 @@
+version: "3.8"
+services:
+
+  mti_nginx:
+    container_name: mti_nginx
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    volumes:
+      - ./public:/var/src/app/public
+    ports:
+      - 8000:80
+    depends_on:
+      - mti_app
+    environment:
+      NGINX_FPM_HOST: mti_app
+      NGINX_ROOT: /var/src/app/public
+    networks:
+      - app_network
+
+  mti_db:
+    container_name: mti_db
+    image: mysql:8.0.20
+    restart: always
+    volumes:
+      - ./storage/db-data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: mti
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    networks:
+      - app_network
+    platform: linux/x86_64
+
+  mti_redis:
+    container_name: mti_redis
+    image: redis:latest
+    ports:
+      - 6379:6379
+    networks:
+      - app_network
+
+  mti_app:
+    container_name: mti_app
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    expose:
+      - 9000
+    volumes:
+      - .:/var/src/app
+      - ./public:/var/src/app/public
+    depends_on:
+      - mti_db
+      - mti_redis
+    networks:
+      - app_network
+    ports:
+      - "8080:8080"
+
+networks:
+  app_network:
+    driver: bridge
+
