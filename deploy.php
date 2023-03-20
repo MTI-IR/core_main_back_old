@@ -13,11 +13,11 @@ add('shared_dirs', []);
 add('writable_dirs', []);
 
 // Hosts
-
+// doc: https://github.com/deployphp/deployer/blob/master/docs/UPGRADE.md
 host('mtii.ir')
     ->stage('production')
     ->user('root')
-    ->set('labels', ['server_type' => 'app'])
+    ->set('labels', ['stage' => 'prod']);
     ->set('remote_user', 'deployer')
     ->set('deploy_path', 'var/www/html');
 
