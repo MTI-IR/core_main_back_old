@@ -17,7 +17,7 @@ add('writable_dirs', []);
 host('mtii.ir')
     ->stage('production')
     ->user('root')
-    ->set('labels', ['stage' => 'prod']);
+    ->set('labels', ['stage' => 'prod'])
     ->set('remote_user', 'deployer')
     ->set('deploy_path', 'var/www/html');
 
