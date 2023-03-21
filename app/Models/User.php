@@ -70,7 +70,21 @@ class User extends Authenticatable
 
 
 
+    public static function boot()
+    {
+        parent::boot();
 
+        static::deleting(function ($user) { // before delete() method call this
+            $user->images()->delete();
+            $user->documents()->delete();
+            $user->markProjects()->delete();
+            $user->ticketProjects()->delete();
+            $user->marks()->delete();
+            $user->tickets()->delete();
+            $user->projects()->delete();
+            $user->companies()->delete();
+        });
+    }
 
 
 

@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('first_name')->index();
-            $table->string('last_name')->index();
+            $table->string('first_name')->index()->nullable();
+            $table->string('last_name')->index()->nullable();
             $table->string('email')->unique()->nullable();
             $table->string('phone_number')->unique()->index();
             $table->string('national_code')->nullable()->index();
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('phone_number_verified_at')->nullable();
             $table->timestamp('last_edit')->nullable();
-            $table->boolean('validate')->default(false);
+            $table->boolean('validated')->default(false)->index();
             $table->timestamps();
         });
     }

@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
             $table->text('explanation')->nullable();
+            $table->text('admin_explanation')->nullable();
             $table->boolean('checked')->default(false);
             $table->foreignUuid('user_id')->index()->constrained()->cascadeOnDelete();;
             $table->foreignUuid('project_id')->index()->constrained()->cascadeOnDelete();

@@ -28,7 +28,7 @@ class SiteInfoController extends Controller
             return new SiteInfoResource($cities);
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "There is no state whit this ID",
+                "message" => "There is no state whit this ID",
                 "status" => 404,
             ], 404);
         }
@@ -55,7 +55,7 @@ class SiteInfoController extends Controller
             return new SiteInfoResource($sub_categories);
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "There is no category whit this ID",
+                "message" => "There is no category whit this ID",
                 "status" => 404,
             ], 404);
         }

@@ -18,7 +18,6 @@ class LoginController extends Controller
 {
     public function Login(Request $request)
     {
-        // dd($request);
         $data = $request->validate([
             "phone_number"     =>  "required|string",
             "password"  =>  "required|string|max:32"
@@ -46,7 +45,7 @@ class LoginController extends Controller
                 "login_time" => Carbon::now(),
                 'ip' => $request->ip(),
                 "images" => $images,
-                "validate" => $user->validate,
+                "validated" => $user->validated,
                 "permissions_via_roles" => $user->getPermissionsViaRoles(),
                 "all_permissions" => $user->getAllPermissions(),
                 "direct_permissions" => $user->getDirectPermissions(),
@@ -95,13 +94,13 @@ class LoginController extends Controller
                 return new UserInfoResource($userInfo);
             else
                 return response()->json([
-                    "massage" => "This token is not valid.",
+                    "message" => "This token is not valid.",
                     "status" => "401",
                     "userInfo" => $userInfo,
                 ], 401);
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "This token is not valid.",
+                "message" => "This token is not valid.",
                 "status" => "401",
             ], 401);
         }

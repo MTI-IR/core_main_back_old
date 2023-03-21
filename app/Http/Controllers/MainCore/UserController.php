@@ -5,7 +5,6 @@ namespace App\Http\Controllers\MainCore;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MainCore\ProjectsResource;
 use App\Http\Resources\MainCore\SiteInfoResource;
-use App\Http\Resources\MainCore\TicketsResource;
 use App\Http\Resources\mainCore\userInfoResource;
 use App\Models\Image;
 use App\Models\Mark;
@@ -13,8 +12,8 @@ use App\Models\Project;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File as FacadesFile;
 use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 class UserController extends Controller
@@ -30,7 +29,7 @@ class UserController extends Controller
             Project::findOrFail($project_id);
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "no project with this ID",
+                "message" => "no project with this ID",
                 "status" => "404"
             ], 404);
         }
@@ -42,7 +41,7 @@ class UserController extends Controller
             $mark->save();
         }
         return response()->json([
-            "massage" => "project marked",
+            "message" => "project marked",
             "status" => "200",
         ], 200);
     }
@@ -59,7 +58,7 @@ class UserController extends Controller
             Project::findOrFail($project_id);
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "no project with this ID",
+                "message" => "no project with this ID",
                 "status" => "404"
             ], 404);
         }
@@ -68,7 +67,7 @@ class UserController extends Controller
             $mark->delete();
         }
         return response()->json([
-            "massage" => "project unmarked",
+            "message" => "project unmarked",
             "status" => "200",
         ], 200);
     }
@@ -87,7 +86,7 @@ class UserController extends Controller
             Project::findOrFail($project_id);
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "no project with this ID",
+                "message" => "no project with this ID",
                 "status" => "404"
             ], 404);
         }
@@ -99,7 +98,7 @@ class UserController extends Controller
             $ticket->save();
         }
         return response()->json([
-            "massage" => "ticket added",
+            "message" => "ticket added",
             "status" => "200",
         ], 200);
     }
@@ -116,7 +115,7 @@ class UserController extends Controller
             Project::findOrFail($project_id);
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "no project with this ID",
+                "message" => "no project with this ID",
                 "status" => "404"
             ], 404);
         }
@@ -125,7 +124,7 @@ class UserController extends Controller
             $ticket->delete();
         }
         return response()->json([
-            "massage" => "ticket removed",
+            "message" => "ticket removed",
             "status" => "200",
         ], 200);
     }
@@ -208,9 +207,11 @@ class UserController extends Controller
             if ($newImage) {
                 $images = Image::where('imageable_id', $user->id)->where('imageable_type', 'App\Models\User');
                 $images = $images->get();
-                foreach ($images as $i) {
-                    $i->delete();
-                    // Storage::delete(public_path('images',$image->url));
+                foreach ($images as $image) {
+                    $image->delete();
+                    if (file_exists(public_path('images') . substr($image->url, 28))) {
+                        FacadesFile::delete(public_path('images') . substr($image->url, 28));
+                    }
                 }
                 $filename = time() . $user->id . '.' . $newImage->getClientOriginalExtension();
                 $newImage->move(public_path('images'), $filename);
@@ -225,12 +226,12 @@ class UserController extends Controller
             }
             $user->save();
             return response()->json([
-                "massage" => "user edited",
+                "message" => "user edited",
                 "status" => "200",
             ], 200);
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "User not found",
+                "message" => "User not found",
                 "status" => "404",
             ], 404);
         }
@@ -249,12 +250,12 @@ class UserController extends Controller
         $user = User::findOrFail($user->id);
         if ($user->validate) {
             return response()->json([
-                'massage' => "This user can create project",
+                'message' => "This user can create project",
                 "status" => '200'
             ], 200);
         }
         return response()->json([
-            'massage' => "This user can not create project",
+            'message' => "This user can not create project",
             "status" => '403'
         ], 403);
     }

@@ -22,12 +22,12 @@ class LoninStatus
             $token = ($request->header()["authorization"][0]);
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "Token is not found",
+                "message" => "Token is not found",
                 "status" => "404",
             ], 404);
         }
         if (!$token) return  response()->json([
-            "massage" => "Token is not found",
+            "message" => "Token is not found",
             "status" => "404",
         ], 404);
         $token = substr($token, 7);
@@ -39,12 +39,12 @@ class LoninStatus
                 return $next($request, 200);
             }
             return response()->json([
-                "massage" => "This token is not valid.",
+                "message" => "This token is not valid.",
                 "status" => "401",
             ], 401);
         } catch (Throwable $e) {
             return  response()->json([
-                "massage" => "This token is not valid.",
+                "message" => "This token is not valid.",
                 "status" => "401",
             ], 401);
         }

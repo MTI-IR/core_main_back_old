@@ -105,12 +105,12 @@ class UserProjectController extends Controller
             }
             $newProject->save();
             return response()->json([
-                "massage" => "project created",
+                "message" => "project created",
                 "status" => "200"
             ]);
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "server error ",
+                "message" => "server error ",
                 "status" => 500,
             ], 404);
         }
@@ -122,13 +122,13 @@ class UserProjectController extends Controller
             $project = Project::findOrFail($id);
             if ($user->id != $project->user_id) {
                 return response()->json([
-                    "massage" => "You don't have the access ",
+                    "message" => "You don't have the access ",
                     "status" => 403,
                 ], 403);
             }
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "There is no project whit this ID ",
+                "message" => "There is no project whit this ID ",
                 "status" => 404,
             ], 404);
         }
@@ -225,7 +225,7 @@ class UserProjectController extends Controller
             });
             $project->save();
             return response()->json([
-                "massage" => "project edited.",
+                "message" => "project edited.",
                 "status" => "200"
             ], 200);
         } catch (Throwable $e) {
@@ -241,7 +241,7 @@ class UserProjectController extends Controller
             $project = Project::findOrFail($id);
             if ($user->id != $project->user_id) {
                 return response()->json([
-                    "massage" => "You don't have the access ",
+                    "message" => "You don't have the access ",
                     "status" => 403,
                 ], 403);
             }
@@ -265,7 +265,7 @@ class UserProjectController extends Controller
             return new UserProjectResource($project);
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "There is no project whit this ID ",
+                "message" => "There is no project whit this ID ",
                 "status" => 404,
                 "error" => $e,
             ], 404);

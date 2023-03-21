@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('phone_number');
             $table->text('address');
             $table->longText('description');
-            $table->timestamp('boolean')->default(false);
+            $table->boolean('validated')->default(false);
 
 
             $table->foreignUuid('user_id')->index()->constrained()->cascadeOnDelete();

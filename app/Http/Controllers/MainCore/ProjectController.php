@@ -128,7 +128,7 @@ class ProjectController extends Controller
             $project = Project::findOrFail($id);
             if ($project->show_time > now())
                 return response()->json([
-                    "massage" => "This project is not available for now!",
+                    "message" => "This project is not available for now!",
                     "status" => 403,
                 ], 403);
             $images = [];
@@ -149,20 +149,20 @@ class ProjectController extends Controller
                 $mark = count(Mark::where("user_id", $user->id)->where("project_id", $project->id)->get()) ? true : false;
                 if (count($userPermission) && $permission->priority <= $userPermission[0]->priority) {
                     return response()->json([
-                        "massage" => "not allowd",
+                        "message" => "not allowd",
                         "status" => 403,
                     ], 403);
                 } else {
                     if ($permission->priority > 0)
                         return response()->json([
-                            "massage" => "not allowd",
+                            "message" => "not allowd",
                             "status" => 403,
                         ], 403);
                 }
             } else {
                 if ($permission->priority > 0)
                     return response()->json([
-                        "massage" => "not allowd",
+                        "message" => "not allowd",
                         "status" => 403,
                     ], 403);
             }
@@ -174,7 +174,7 @@ class ProjectController extends Controller
             return new ProjectResource($project);
         } catch (Throwable $e) {
             return response()->json([
-                "massage" => "There is no project whit this ID ",
+                "message" => "There is no project whit this ID ",
                 "status" => 404,
                 "error" => $e,
             ], 404);
