@@ -62,15 +62,18 @@ class SubCategoryController extends Controller
     public function create(Request $request)
     {
         $data = $request->validate([
-            "name" => "required|string",
+            "name" => "required|string|unique:sub_categories",
             "category_id" => "required"
         ]);
         try {
             $category = Category::findOrFail($data['category_id']);
-            if (!$category)  return response()->json([
+        } catch (Throwable $e) {
+            return response()->json([
                 "message" => "category not found!!!.",
                 "status" => "404",
             ], 404);
+        }
+        try {
             $sub_category = SubCategory::make();
             $sub_category->name = $data['name'];
             $sub_category->category_id = $data['category_id'];

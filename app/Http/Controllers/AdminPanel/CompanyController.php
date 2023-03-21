@@ -105,6 +105,8 @@ class CompanyController extends Controller
             "phone_number" => "required|digits:11",
             "description" => "required|string",
             "validated" => "boolean",
+            "document" => 'file|mimes:zip',
+            "images.*"  =>  "image",
         ]);
         try {
             $company = Company::findOrFail($data['id']);
@@ -154,6 +156,16 @@ class CompanyController extends Controller
                     $image->save();
                 });
             }
+            $docFile = $request->file("document");
+            if ($docFile) {
+                $i = 0;
+                $filename = time() . '--' . $i . '--' . $company->id . '.' . $docFile->getClientOriginalExtension();
+                $i++;
+                $docFile->move(storage_path('app/documents'), $filename);
+                $doc = $company->documents()->make();
+                $doc->url = $filename;
+                $doc->save();
+            }
             $company->save();
             return response()->json([
                 "message" => "Company edited",
@@ -175,6 +187,8 @@ class CompanyController extends Controller
             "phone_number" => "required|digits:11|unique:companies",
             "description" => "required|string",
             "validated" => "boolean",
+            "document" => 'required|file|mimes:zip',
+            "images.*"  =>  "image",
         ]);
         try {
             User::findOrFail($data['user_id']);
@@ -225,6 +239,17 @@ class CompanyController extends Controller
                 $image->priority = $index;
                 $image->save();
             });
+
+            $docFile = $request->file("document");
+            if ($docFile) {
+                $i = 0;
+                $filename = time() . '--' . $i . '--' . $company->id . '.' . $docFile->getClientOriginalExtension();
+                $i++;
+                $docFile->move(storage_path('app/documents'), $filename);
+                $doc = $company->documents()->make();
+                $doc->url = $filename;
+                $doc->save();
+            }
             $company->save();
             return response()->json([
                 "message" => "Company created",
@@ -264,5 +289,33 @@ class CompanyController extends Controller
             ], 404);
         }
         return new BaseResource($company->projects);
+    }
+
+    public function document(Request $request, $id)
+    {
+        try {
+            $company = Company::findOrFail($id);
+            $document = $company->documents()->orderBy('created_at', 'desc')->first();
+            if ($document) {
+                $document = $document->url;
+                $doc_path = storage_path('app/documents/' . $document);
+                if (file_exists($doc_path)) { // Checking if file exist
+                    $headers = [
+                        'Content-Type' => 'application/zip'
+                    ];
+                    return response()->download($doc_path, 'Test File', $headers, 'inline');
+                }
+            }
+            return response()->json([
+                "message" => "No document for this company",
+                "status" => "404"
+            ], 404);
+        } catch (Throwable $e) {
+            return $e;
+            return response()->json([
+                "message" => "company not found.",
+                "status" => "404"
+            ], 404);
+        }
     }
 }

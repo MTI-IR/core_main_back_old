@@ -27,13 +27,19 @@ class CityController extends Controller
             $cities = City::orderBy($order_by)->paginate(
                 $row_number,
                 [
-                    '*'
+                    'id',
+                    'name',
+                    'phone_code',
+                    'state_id',
                 ],
                 'page',
                 $page
             );
             foreach ($cities as $city) {
-                $city["state"] = $city->state;
+                $city["state"] = $city->state()->get([
+                    'id',
+                    'name',
+                ]);
             }
             return new BaseResource($cities);
         } catch (Throwable $e) {
@@ -62,15 +68,19 @@ class CityController extends Controller
     public function create(Request $request)
     {
         $data = $request->validate([
-            "name" => "required|string",
-            "state_id" => "required"
+            "name" => "required|string|unique:cities",
+            "state_id" => "required",
+            "phone_code" => "digits:3"
         ]);
         try {
             $state = State::findOrFail($data['state_id']);
-            if (!$state)  return response()->json([
+        } catch (Throwable $e) {
+            return response()->json([
                 "message" => "State not found!!!.",
                 "status" => "404",
             ], 404);
+        }
+        try {
             $city = City::make();
             $city->name = $data['name'];
             $city->state_id = $data['state_id'];

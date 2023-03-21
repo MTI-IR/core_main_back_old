@@ -15,6 +15,7 @@ use App\Models\SubCategory;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Spatie\Permission\Models\Permission;
 use Throwable;
 
 class ProjectController extends Controller
@@ -53,7 +54,6 @@ class ProjectController extends Controller
 
     public function edit(Request $request)
     {
-
         $data = $request->validate([
             'id' => "string",
             "title"     =>  "required|string",
@@ -62,6 +62,12 @@ class ProjectController extends Controller
             "city_id"  =>  "required|string|",
             "category_id"  =>  "required|string|",
             "sub_category_id"  =>  "required|string|",
+            "permission_id" => "numeric",
+            "our_review" => "string",
+            "validated" => "boolean",
+            "removed_images.*" => "string",
+            "document" => 'file|mimes:zip',
+            "images.*" => "image"
         ]);
         $project = Project::findOrFail($data['id']);
         $company_id = null;
@@ -103,6 +109,20 @@ class ProjectController extends Controller
                     $project->company()->associate($company);
                 }
             }
+
+            if ($request->get('our_review')) {
+                $project->our_review = $data['our_review'];
+            }
+
+            if ($request->get('validated')) {
+                $project->validated = $data['validated'];
+            }
+
+            if ($request->get('permission_id')) {
+                $project->permission_id = $data['permission_id'];
+            }
+
+
             $project->summary = $summary;
 
             $removedImages = $request->get("removed_images");
@@ -145,6 +165,17 @@ class ProjectController extends Controller
                 $image->priority = $index;
                 $image->save();
             });
+
+            $docFile = $request->file("document");
+            if ($docFile) {
+                $i = 0;
+                $filename = time() . '--' . $i . '--' . $project->id . '.' . $docFile->getClientOriginalExtension();
+                $i++;
+                $docFile->move(storage_path('app/documents'), $filename);
+                $doc = $project->documents()->make();
+                $doc->url = $filename;
+                $doc->save();
+            }
             $project->save();
             return response()->json([
                 "message" => "project edited.",
@@ -163,18 +194,24 @@ class ProjectController extends Controller
     {
 
         $data = $request->validate([
-            'user_id' => "string",
+            'user_id' => "required|string",
             "title"     =>  "required|string",
             "description"  =>  "required|string",
-            "state_name"  =>  "required|string",
+            "state_name"  =>  "string",
             "state_id"  =>  "required|string",
-            "city_name"  =>  "required|string",
+            "city_name"  =>  "string",
             "city_id"  =>  "required|string",
             "category_id"  =>  "required|string",
             "sub_category_id"  =>  "required|string",
             "company_id"  =>  "string",
+            "permission_id"  =>  "string",
+            "our_review"  =>  "string",
+            "validated"  =>  "boolean",
+            "document" => 'required|file|mimes:zip',
+            "images.*"  =>  "image",
         ]);
-        $project = Project::findOrFail($data['id']);
+        $project = Project::make();
+        $project->id = Str::uuid();
         $summary = null;
         $price = 0;
         if ($request->get('summary')) {
@@ -184,40 +221,50 @@ class ProjectController extends Controller
             $price = $request->get('price');
         }
         try {
+
             $project->title = $data["title"];
             if ($price != null)
                 $project->price = $price;
             $project->description = $data["description"];
-            $state = State::make();
-            $state->id = Str::uuid();
-            $state->user_id = $data['user_id'];
+            $project->user_id = $data['user_id'];
 
-            $project->state()->dissociate();
+            $state = State::findOrFail($data["state_id"]);
             $project->state()->associate($state);
             $project->state_name = $state->name;
 
             $city = City::findOrFail($data["city_id"]);
-            $project->city()->dissociate();
             $project->city()->associate($city);
             $project->city_name = $city->name;
 
             $category = Category::findOrFail($data["category_id"]);
-            $project->category()->dissociate();
             $project->category()->associate($category);
 
             $sub_category = SubCategory::findOrFail($data["sub_category_id"]);
-            $project->sub_category()->dissociate();
             $project->sub_category()->associate($sub_category);
+
+            $permission_id = Permission::all()->sortBy('priority')->first()->id;
+            if ($request->get('permission_id')) {
+                $permission_id = $data['permission_id'];
+            }
+            $project->permission_id = $permission_id;
+
+            if ($request->get('our_review')) {
+                $project->our_review = $data['our_review'];
+            }
+            if ($request->get('validated')) {
+                $project->validated = $data['validated'];
+            }
 
             if ($request->get('company_id') != null) {
                 $company = Company::findOrFail($request->get('company_id'));
                 if ($company) {
-                    $project->company()->dissociate();
                     $project->company()->associate($company);
                 }
             }
             $project->summary = $summary;
 
+
+            $project->save();
             $imageFiles = $request->file("images");
             $images = [];
             if ($imageFiles) {
@@ -240,9 +287,21 @@ class ProjectController extends Controller
                 $image->priority = $index;
                 $image->save();
             });
-            $project->save();
+
+            $docFile = $request->file("document");
+            if ($docFile) {
+                $i = 0;
+                $filename = time() . '--' . $i . '--' . $project->id . '.' . $docFile->getClientOriginalExtension();
+                $i++;
+                $docFile->move(storage_path('app/documents'), $filename);
+                $doc = $project->documents()->make();
+                $doc->url = $filename;
+                $doc->save();
+            }
+
+
             return response()->json([
-                "message" => "project edited.",
+                "message" => "Project created.",
                 "status" => "200"
             ], 200);
         } catch (Throwable $e) {
@@ -275,7 +334,33 @@ class ProjectController extends Controller
             ], 500);
         }
     }
-    public function validateProject(Request $request)
+
+    public function document(Request $request, $id)
+    {
+        try {
+            $project = Project::findOrFail($id);
+            $document = $project->documents()->orderBy('created_at', 'desc')->first()->url;
+            $doc_path = storage_path('app/documents/' . $document);
+            if (file_exists($doc_path)) { // Checking if file exist
+                $headers = [
+                    'Content-Type' => 'application/zip'
+                ];
+                return response()->download($doc_path, 'Test File', $headers, 'inline');
+            }
+            return response()->json([
+                "message" => "No document for this project",
+                "status" => "404"
+            ], 404);
+        } catch (Throwable $e) {
+            return $e;
+            return response()->json([
+                "message" => "Project not found.",
+                "status" => "404"
+            ], 404);
+        }
+    }
+
+    public function validateProjects(Request $request)
     {
         $data = $request->validate([
             "projects" => "array"

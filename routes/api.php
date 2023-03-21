@@ -119,6 +119,7 @@ Route::group([
     Route::post("/create", [CompanyController::class, 'create']);
     Route::post("/destroy", [CompanyController::class, 'destroy']);
     Route::post("/validate", [CompanyController::class, 'validateCompanies']);
+    Route::get("/document/{id}", [CompanyController::class, 'document']);
     Route::get("/{id}", [CompanyController::class, 'show']);
 });
 
@@ -131,6 +132,7 @@ Route::group([
     Route::post("/destroy", [AdminPanelProjectController::class, 'destroy']);
     Route::post("/create", [AdminPanelProjectController::class, 'create']);
     Route::post("/validate", [AdminPanelProjectController::class, 'validateProjects']);
+    Route::get("/document/{id}", [AdminPanelProjectController::class, 'document']);
     Route::get("/{id}", [AdminPanelProjectController::class, 'show']);
 });
 
