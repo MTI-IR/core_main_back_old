@@ -25,6 +25,7 @@ return new class extends Migration
             $table->timestamp('phone_number_verified_at')->nullable();
             $table->timestamp('last_edit')->nullable();
             $table->boolean('validated')->default(false)->index();
+            $table->boolean('is_admin')->default(false)->index();
             $table->timestamps();
         });
     }

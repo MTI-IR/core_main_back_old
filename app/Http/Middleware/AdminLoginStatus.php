@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Throwable;
 
-class LoninStatus
+class AdminLoginStatus
 {
     /**
      * Handle an incoming request.
@@ -30,11 +30,17 @@ class LoninStatus
             "message" => "Token is not found",
             "status" => "404",
         ], 404);
-        $token = substr($token, 7);
+        $token = 'admin-' . substr($token, 7);
         try {
             $userInfo = Redis::get($token);
             if ($userInfo) {
                 $userInfo = json_decode($userInfo);
+                if (!$userInfo->is_admin) {
+                    return  response()->json([
+                        "message" => "You are not an admin",
+                        "status" => "403",
+                    ], 403);
+                }
                 $request->attributes->add(['user' => $userInfo]);
                 return $next($request, 200);
             }

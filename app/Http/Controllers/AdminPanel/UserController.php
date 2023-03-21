@@ -179,9 +179,10 @@ class UserController extends Controller
             "last_name" => "required_with:first_name|string",
             "national_code" => "digits:10",
             "email" => "email",
-            "phone_number" => 'required|digits:11:unique:users',
+            "phone_number" => 'required|digits:11|unique:users',
             "validated" => "boolean",
             "password" => "string",
+            "is_admin" => "boolean",
         ]);
 
         try {
@@ -204,6 +205,9 @@ class UserController extends Controller
             if ($request->get('password')) {
                 $data["password"] = Hash::make($data["password"]);
                 $user->password = $data['password'];
+            }
+            if ($request->get('is_admin')) {
+                $user->is_admin = $data['is_admin'];
             }
             $newImage = $request->file("image");
             if ($newImage) {

@@ -8,7 +8,6 @@ use App\Http\Resources\Auth\UserInfoResource;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
@@ -20,14 +19,21 @@ class LoginController extends Controller
     {
         $data = $request->validate([
             "phone_number"     =>  "required|string",
-            "password"  =>  "required|string|max:32"
+            "password"  =>  "required|string|max:32",
+            'is_admin' => "boolean"
         ]);
         $user    =   User::where('phone_number', '=',  $data["phone_number"])->first();
-        // $user    =   DB::table('users')->select('id', 'name', 'email', 'phone_number', 'password')->where('email', '=',  $data["email"])->first();
         if (!$user) {
             return response()->json([
-                "error" => "username or password is incorrect"
+                "message" => "username or password is incorrect",
+                "status" => "404"
             ], 404);
+        }
+        if (($request->get('is_admin') && !$user->is_admin) || (!$request->get('is_admin') && $user->is_admin)) {
+            return response()->json([
+                "message" => "Make sure you are admin and using right login page",
+                "status" => "403"
+            ], 403);
         }
         if (Hash::check($data["password"], $user->password)) {
             $userImages = $user->images;
@@ -56,13 +62,26 @@ class LoginController extends Controller
             for ($i; $i < 6; $i++) {
                 $userId = '0' . $userId;
             }
-            $sessions  = Redis::keys($userId . "*");
-            $session = 0;
-            $sessonsCount = count($sessions);
-            for ($i = 0; $i < $sessonsCount; $i++) {
-                if ($i != (int) substr($sessions[$i], 54, 6)) {
-                    $session = $i;
-                    break;
+            if ($request->get('is_admin')) {
+                $userInfo["is_admin"] = true;
+                $sessions  = Redis::keys('admin-' . $userId . "*");
+                $session = 0;
+                $sessonsCount = count($sessions);
+                for ($i = 0; $i < $sessonsCount; $i++) {
+                    if ($i != (int) substr($sessions[$i], 60, 6)) {
+                        $session = $i;
+                        break;
+                    }
+                }
+            } else {
+                $sessions  = Redis::keys($userId . "*");
+                $session = 0;
+                $sessonsCount = count($sessions);
+                for ($i = 0; $i < $sessonsCount; $i++) {
+                    if ($i != (int) substr($sessions[$i], 54, 6)) {
+                        $session = $i;
+                        break;
+                    }
                 }
             }
             $session = ($session ? $session : $sessonsCount) . "";
@@ -71,8 +90,13 @@ class LoginController extends Controller
                 $session = '0' . $session;
             }
             $token =  $userId  . '-' . $session . '-' .  $uuid;
-            $userInfo["token"] = $token;
-            Redis::setex($token, 43200,  json_encode($userInfo));
+            if ($request->get('is_admin')) {
+                Redis::setex($token, 43200,  json_encode($userInfo));
+                $userInfo["token"] = substr($token, 6);
+            } else {
+                Redis::setex($token, 43200,  json_encode($userInfo));
+                $userInfo["token"] = $token;
+            }
             return new LoginResource([
                 "token" => $token,
                 "user" => $userInfo,
@@ -88,6 +112,9 @@ class LoginController extends Controller
         $auth = $request->header('authorization');
         try {
             $token = substr($auth, 7);
+            if ($request->get('is_admin')) {
+                $token = 'admin-' . $token;
+            }
             $userInfo = Redis::get($token);
             $userInfo = json_decode($userInfo);
             if ($userInfo)

@@ -96,8 +96,12 @@ Route::group([
 
 Route::group([
     'prefix' => 'admin/user',
+    // 'middleware' => [
+    //     'adminLoginStatus'
+    // ]
+
 ], function () {
-    Route::get("/all", [AdminPanelUserController::class, 'index']);
+    Route::get("/all", [AdminPanelUserController::class, 'index'])->middleware(['permission:user.view']);
     Route::post("/destroy/users", [AdminPanelUserController::class, 'destroyUsers']);
     Route::get("/destroy", [AdminPanelUserController::class, 'destroy']);
     Route::post("/validate/users", [AdminPanelUserController::class, 'validateUsers']);
