@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Document;
+use Database\Seeders\AdminPanel\RolesAndPermissionsSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -29,5 +30,6 @@ class DatabaseSeeder extends Seeder
         $this->call(DocumentSeeder::class);
         $this->call(TimeSeeder::class);
         $this->call(TicketSeeder::class);
+        $this->call(RolesAndPermissionsSeeder::class);
     }
 }

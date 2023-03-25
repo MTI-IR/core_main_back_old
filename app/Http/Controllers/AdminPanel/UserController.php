@@ -64,11 +64,11 @@ class UserController extends Controller
             $user = User::findOrFail($id);
             $user['images'] = $user->images;
             $user['companies'] = $user->companies;
-            $user['roles'] = $user->roles;
             $user['documents'] = $user->documents;
             $user['projects'] = $user->projects;
             $user['tickets'] = $user->tickets;
             $user['marks'] = $user->marks;
+            $user['roles'] = $user->getRoleNames();
             $user['permissions'] = $user->getPermissionsViaRoles();
             return new BaseResource($user);
         } catch (Throwable $e) {
@@ -165,7 +165,6 @@ class UserController extends Controller
                 "status" => "200"
             ], 200);
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 "message" => "User not found",
                 "status" => "404"
@@ -242,7 +241,6 @@ class UserController extends Controller
                 'status' => "200"
             ], 200);
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 "message" => "Something went wrong",
                 'status' => "500"
@@ -263,7 +261,6 @@ class UserController extends Controller
                 'status' => "200"
             ], 200);
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 "message" => "Something went wrong",
                 'status' => "500"
@@ -290,7 +287,6 @@ class UserController extends Controller
                 'status' => "200"
             ], 200);
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 "message" => "Something went wrong",
                 'status' => "500"
@@ -318,9 +314,15 @@ class UserController extends Controller
                 $role = Role::findById($data['role_id'])->name;
             if ($request->get('role_name'))
                 $role = $data['role_name'];
-            $user->assignRole($role);
+            if ($request->get('is_admin'))
+                $role = Role::findByName($role, 'admin');
+            else
+                $role = Role::findByName($role, 'web');
+            if ($role)
+                $user->assignRole($role);
+            else
+                throw "error";
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 'massage' => 'Role not found',
                 'status' => '404',
@@ -353,7 +355,6 @@ class UserController extends Controller
                 $permissions = $data['permissions_id'];
             $user->givePermissionTo($permissions);
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 'massage' => 'Permissions not found',
                 'status' => '404',
@@ -376,7 +377,6 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($data["user_id"]);
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 'massage' => 'User not found',
                 'status' => '404',
@@ -389,7 +389,6 @@ class UserController extends Controller
                 $permission = $data['permission_id'];
             $user->revokePermissionTo($permission);
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 'massage' => 'Permission not found',
                 'status' => '404',
@@ -412,7 +411,6 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($data["user_id"]);
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 'massage' => 'User not found',
                 'status' => '404',

@@ -63,7 +63,6 @@ class LoginController extends Controller
                 $userId = '0' . $userId;
             }
             if ($request->get('is_admin')) {
-                $userInfo["is_admin"] = true;
                 $sessions  = Redis::keys('admin-' . $userId . "*");
                 $session = 0;
                 $sessonsCount = count($sessions);
@@ -91,10 +90,12 @@ class LoginController extends Controller
             }
             $token =  $userId  . '-' . $session . '-' .  $uuid;
             if ($request->get('is_admin')) {
-                Redis::setex($token, 43200,  json_encode($userInfo));
+                $userInfo["is_admin"] = true;
+                Redis::setex('admin-' . $token, 43200,  json_encode($userInfo));
                 $userInfo["token"] = substr($token, 6);
             } else {
                 Redis::setex($token, 43200,  json_encode($userInfo));
+                $userInfo["is_admin"] = false;
                 $userInfo["token"] = $token;
             }
             return new LoginResource([

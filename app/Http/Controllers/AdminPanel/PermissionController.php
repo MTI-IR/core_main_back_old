@@ -37,14 +37,14 @@ class PermissionController extends Controller
         $data = $request->validate(
             [
                 "name" => ['required', 'unique:permissions', 'string'],
-                "priority" => ['required', 'string'],
+                "priority" => ['required_without:is_admin', 'string'],
                 "is_admin" => ['boolean'],
             ]
         );
         $is_admin = $request->get('is_admin');
         if ($is_admin) {
-            Permission::create(['name' => $data["name"], 'priority' => $data['priority'], 'guard_name' => 'admin']);
-            $permissions = Permission::where('guard_name', 'web')->get(['id', 'name', 'priority', 'guard_name']);
+            Permission::create(['name' => $data["name"], 'priority' => 0, 'guard_name' => 'admin']);
+            $permissions = Permission::where('guard_name', 'admin')->get(['id', 'name', 'priority', 'guard_name']);
         } else {
             Permission::create(['name' => $data["name"], 'priority' => $data['priority'], 'guard_name' => 'web']);
             $permissions = Permission::where('guard_name', 'web')->get(['id', 'name', 'priority', 'guard_name']);

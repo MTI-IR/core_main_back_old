@@ -61,7 +61,6 @@ class CompanyController extends Controller
             $company['projects'] = $company->projects;
             return new BaseResource($company);
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 'message' => 'company not found',
                 'status' => '404'
@@ -88,7 +87,6 @@ class CompanyController extends Controller
                 'status' => "200"
             ], 200);
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 "message" => "Something went wrong",
                 'status' => "500"
@@ -311,7 +309,6 @@ class CompanyController extends Controller
                 "status" => "404"
             ], 404);
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 "message" => "company not found.",
                 "status" => "404"

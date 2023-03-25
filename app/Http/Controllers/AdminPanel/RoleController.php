@@ -38,8 +38,8 @@ class RoleController extends Controller
         } else {
             $role = Role::create(['name' => $data["name"], 'guard_name' => 'web']);
         }
-
-        $role->givePermissionTo($data['added_permissions'], 'admin');
+        if ($request->get("added_permissions"))
+            $role->givePermissionTo($data['added_permissions'], 'admin');
         $roles = Role::all();
         return new BaseResource(($roles));
     }
@@ -229,7 +229,6 @@ class RoleController extends Controller
                 return new BaseResource($role);
             }
         } catch (Throwable $e) {
-            return $e;
             return response()->json([
                 'massage' => 'Role not found',
                 'status' => '404',
