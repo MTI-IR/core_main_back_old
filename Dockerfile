@@ -3,10 +3,10 @@ FROM php:8-fpm-alpine
 ENV COMPOSER_ALLOW_SUPERUSER=1
 # RUN apt-get update -y && apt-get install -y openssl git
 RUN apk update && apk add openssl git
+RUN docker-php-ext-install pdo pdo_mysql sockets
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN docker-php-ext-install pdo pdo_mysql
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
-RUN docker-php-ext-install mysqli pdo pdo_mysql
 COPY . .
 RUN composer update
 # RUN composer update --ignore-platform-reqs
