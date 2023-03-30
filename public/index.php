@@ -16,7 +16,7 @@ define('LARAVEL_START', microtime(true));
 |
 */
 
-if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
@@ -31,7 +31,7 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 |
 */
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -44,7 +44,7 @@ require __DIR__.'/../vendor/autoload.php';
 |
 */
 
-$app = require_once __DIR__.'/../bootstrap/app.php';
+$app = require_once __DIR__ . '/../bootstrap/app.php';
 
 $kernel = $app->make(Kernel::class);
 
@@ -55,35 +55,35 @@ $response = $kernel->handle(
 $kernel->terminate($request, $response);
 
 
-server {
-    listen 80;
-    listen [::]:80;
-    server_name example.com;
-    root /srv/example.com/public;
+// server {
+//     listen 80;
+//     listen [::]:80;
+//     server_name example.com;
+//     root /srv/example.com/public;
 
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-Content-Type-Options "nosniff";
+//     add_header X-Frame-Options "SAMEORIGIN";
+//     add_header X-Content-Type-Options "nosniff";
 
-    index index.php;
+//     index index.php;
 
-    charset utf-8;
+//     charset utf-8;
 
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
+//     location / {
+//         try_files $uri $uri/ /index.php?$query_string;
+//     }
 
-    location = /favicon.ico { access_log off; log_not_found off; }
-    location = /robots.txt  { access_log off; log_not_found off; }
+//     location = /favicon.ico { access_log off; log_not_found off; }
+//     location = /robots.txt  { access_log off; log_not_found off; }
 
-    error_page 404 /index.php;
+//     error_page 404 /index.php;
 
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
+//     location ~ \.php$ {
+//         fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+//         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+//         include fastcgi_params;
+//     }
 
-    location ~ /\.(?!well-known).* {
-        deny all;
-    }
-}
+//     location ~ /\.(?!well-known).* {
+//         deny all;
+//     }
+// }

@@ -25,6 +25,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/login', [LoginController::class, 'login']);
 Route::get('/userInfo', [LoginController::class, 'userInfo']);
+Route::get('/', function () {
+    return response()->json([
+        "message" => 'server is up',
+        "status" => '200'
+    ], 200);
+});
 
 
 
