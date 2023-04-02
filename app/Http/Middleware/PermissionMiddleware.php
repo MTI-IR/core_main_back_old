@@ -2,15 +2,22 @@
 
 
 use App\Models\User;
-use Closure;
+use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Throwable;
 
 class PermissionMiddleware
 {
-    public function handle($request, Closure $next, $permission, $guard = null)
+    public function handle(Request $request, Closure $next, $permission, $guard = null)
     {
-        $user_id = $request->get('user')->id;
+        $user_info = $request->get('user');
+        if ($user_info->is_admin)
+            if ($guard !== 'admin')
+                return  response()->json([
+                    "message" => "You are not an admin",
+                    "status" => "401",
+                ], 401);
+        $user_id = $user_info->id;
         $user = User::findOrFail($user_id);
         $permissions = is_array($permission)
             ? $permission
