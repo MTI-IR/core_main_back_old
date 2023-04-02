@@ -4,7 +4,7 @@
 use App\Models\User;
 use Closure;
 
-class RoleMiddleware
+class MyRoleMiddleware
 {
     public function handle($request, Closure $next, $role, $guard = null)
     {

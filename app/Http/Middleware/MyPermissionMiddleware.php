@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Throwable;
 
-class PermissionMiddleware
+class MyPermissionMiddleware
 {
     public function handle(Request $request, Closure $next, $permission, $guard = null)
     {
