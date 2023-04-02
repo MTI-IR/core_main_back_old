@@ -14,12 +14,6 @@ class MyPermissionsMiddleware
     public function handle(Request $request, Closure $next, $permission, $guard = null)
     {
         $user_info = $request->get('user');
-        if ($user_info->is_admin)
-            if ($guard !== 'admin')
-                return  response()->json([
-                    "message" => "You are not an admin",
-                    "status" => "401",
-                ], 401);
         $user_id = $user_info->id;
         $user = User::findOrFail($user_id);
         $permissions = is_array($permission)
