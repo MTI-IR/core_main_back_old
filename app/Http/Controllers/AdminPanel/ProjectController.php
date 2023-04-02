@@ -151,7 +151,7 @@ class ProjectController extends Controller
                     $filename = time() . '--' . $i . '--' . $project->id . '.' . $image->getClientOriginalExtension();
                     $i++;
                     $image->move(public_path('images'), $filename);
-                    $images[] = "http://localhost:8000/images/" . $filename;
+                    $images[] = "images/" . $filename;
                 }
             }
             for ($i = 0; $i < count($images); $i++) {
@@ -273,7 +273,7 @@ class ProjectController extends Controller
                     $filename = time() . '--' . $i . '--' . $project->id . '.' . $image->getClientOriginalExtension();
                     $i++;
                     $image->move(public_path('images'), $filename);
-                    $images[] = "http://localhost:8000/images/" . $filename;
+                    $images[] = "images/" . $filename;
                 }
             }
             for ($i = 0; $i < count($images); $i++) {

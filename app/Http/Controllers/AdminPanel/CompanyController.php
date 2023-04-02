@@ -139,7 +139,7 @@ class CompanyController extends Controller
                         $filename = time() . '--' . $i . '--' . $company->id . '.' . $image->getClientOriginalExtension();
                         $i++;
                         $image->move(public_path('images'), $filename);
-                        $images[] = "http://localhost:8000/images/" . $filename;
+                        $images[] = "images/" . $filename;
                     }
                 }
                 for ($i = 0; $i < count($images); $i++) {
@@ -223,7 +223,7 @@ class CompanyController extends Controller
                     $filename = time() . '--' . $i . '--' . $company->id . '.' . $image->getClientOriginalExtension();
                     $i++;
                     $image->move(public_path('images'), $filename);
-                    $images[] = "http://localhost:8000/images/" . $filename;
+                    $images[] = "images/" . $filename;
                 }
             }
             for ($i = 0; $i < count($images); $i++) {

@@ -215,7 +215,7 @@ class UserController extends Controller
                 }
                 $filename = time() . $user->id . '.' . $newImage->getClientOriginalExtension();
                 $newImage->move(public_path('images'), $filename);
-                $image_url = "http://localhost:8000/images/" . $filename;
+                $image_url = "images/" . $filename;
                 $image = $user->images()->make();
                 $image->priority = 0;
                 $image->url = $image_url;

@@ -93,7 +93,7 @@ class UserProjectController extends Controller
                 foreach ($imageFiles as $image) {
                     $filename = time() . $newId . '.' . $image->getClientOriginalExtension();
                     $image->move(public_path('images'), $filename);
-                    $images[] = "http://localhost:8000/images/" . $filename;
+                    $images[] = "images/" . $filename;
                 }
             }
 
@@ -209,7 +209,7 @@ class UserProjectController extends Controller
                     $filename = time() . '--' . $i . '--' . $project->id . '.' . $image->getClientOriginalExtension();
                     $i++;
                     $image->move(public_path('images'), $filename);
-                    $images[] = "http://localhost:8000/images/" . $filename;
+                    $images[] = "images/" . $filename;
                 }
             }
             for ($i = 0; $i < count($images); $i++) {

@@ -39,7 +39,7 @@ class CompanyController extends Controller
             foreach ($imageFiles as $image) {
                 $filename = time() . $newId . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('images'), $filename);
-                $images[] = "http://localhost:8000/images/" . $filename;
+                $images[] = "images/" . $filename;
             }
         }
 
