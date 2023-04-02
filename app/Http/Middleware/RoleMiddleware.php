@@ -15,13 +15,24 @@ class RoleMiddleware
             ? $role
             : explode('|', $role);
 
+        try {
+            if ($user->hasPermissionTo('super-admin'))
+                return $next($request);
+        } catch (Throwable $e) {
+
+            if ($user->hasAnyRole($roles)) {
+                return  response()->json([
+                    "message" => "You have the needed role ",
+                    "status" => "403",
+                ], 403);
+            }
+        }
         if ($user->hasAnyRole($roles)) {
             return  response()->json([
                 "message" => "You have the needed role ",
                 "status" => "403",
             ], 403);
         }
-
         return $next($request);
     }
 }

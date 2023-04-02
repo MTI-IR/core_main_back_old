@@ -15,13 +15,23 @@ class RoleOrPermissionMiddleware
             ? $roleOrPermission
             : explode('|', $roleOrPermission);
 
+        try {
+            if ($user->hasPermissionTo('super-admin'))
+                return $next($request);
+        } catch (Throwable $e) {
+            if (!$user->hasAnyRole($rolesOrPermissions) && !$user->hasAnyPermission($rolesOrPermissions)) {
+                return  response()->json([
+                    "message" => "You have the needed role or permission ",
+                    "status" => "403",
+                ], 403);
+            }
+        }
         if (!$user->hasAnyRole($rolesOrPermissions) && !$user->hasAnyPermission($rolesOrPermissions)) {
             return  response()->json([
                 "message" => "You have the needed role or permission ",
                 "status" => "403",
             ], 403);
         }
-
         return $next($request);
     }
 }
