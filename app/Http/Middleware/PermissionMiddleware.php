@@ -15,7 +15,7 @@ class PermissionMiddleware
         $permissions = is_array($permission)
             ? $permission
             : explode('|', $permission);
-
+        dd("error is here");
 
         try {
             if ($user->hasPermissionTo('super-admin'))
