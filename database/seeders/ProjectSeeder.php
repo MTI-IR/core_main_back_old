@@ -22,7 +22,7 @@ class ProjectSeeder extends Seeder
     public function run()
     {
         Tag::all()->each(function ($tag) {
-            Project::factory(random_int(1, 1000))->make()->each(function ($project, $key) use ($tag) {
+            Project::factory(random_int(1, 10))->make()->each(function ($project, $key) use ($tag) {
                 $state_id = random_int(1, 31);
                 $project->state_id = $state_id;
                 $state = State::find($state_id);
