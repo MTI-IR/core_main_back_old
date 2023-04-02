@@ -26,7 +26,7 @@ class MyPermissionsMiddleware
             foreach ($permissions as $permission) {
                 try {
                     Permission::findByName($permission, 'admin');
-                    if ($user->hasPermissionTo($permission)) return $next($request);
+                    if ($user->hasPermissionTo($permission, 'admin')) return $next($request);
                 } catch (Throwable $e) {
                     Permission::create(["name" => $permission, 'guard_name' => 'admin']);
                     return  response()->json([
@@ -38,7 +38,7 @@ class MyPermissionsMiddleware
         } catch (Throwable $e) {
             try {
                 Permission::findByName($permission, 'admin');
-                if ($user->hasPermissionTo($permission)) return $next($request);
+                if ($user->hasPermissionTo($permission, 'admin')) return $next($request);
             } catch (Throwable $e) {
                 Permission::create(["name" => $permission, 'guard_name' => 'admin']);
                 return  response()->json([
