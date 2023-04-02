@@ -17,17 +17,17 @@ class MyRoleOrPermissionMiddleware
             : explode('|', $roleOrPermission);
 
         try {
-            if ($user->hasPermissionTo('super-admin'))
+            if ($user->hasPermissionTo('super-admin', 'admin'))
                 return $next($request);
         } catch (Throwable $e) {
-            if (!$user->hasAnyRole($rolesOrPermissions) && !$user->hasAnyPermission($rolesOrPermissions)) {
+            if (!$user->hasAnyRole($rolesOrPermissions, 'admin') && !$user->hasAnyPermission($rolesOrPermissions, 'admin')) {
                 return  response()->json([
                     "message" => "You have the needed role or permission ",
                     "status" => "403",
                 ], 403);
             }
         }
-        if (!$user->hasAnyRole($rolesOrPermissions) && !$user->hasAnyPermission($rolesOrPermissions)) {
+        if (!$user->hasAnyRole($rolesOrPermissions, 'admin') && !$user->hasAnyPermission($rolesOrPermissions, 'admin')) {
             return  response()->json([
                 "message" => "You have the needed role or permission ",
                 "status" => "403",
