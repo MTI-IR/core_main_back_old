@@ -66,7 +66,7 @@ class Kernel extends HttpKernel
         'loginStatus' => \App\Http\Middleware\LoginStatus::class,
         'adminLoginStatus' => \App\Http\Middleware\AdminLoginStatus::class,
         'role' => \App\Http\Middleware\MyRoleMiddleware::class,
-        'permission' => \App\Http\Middleware\MyPermissionMiddleware::class,
+        'permission' => \App\Http\Middleware\MyPermissionsMiddleware::class,
         'role_or_permission' => \App\Http\Middleware\MyRoleOrPermissionMiddleware::class,
 
     ];

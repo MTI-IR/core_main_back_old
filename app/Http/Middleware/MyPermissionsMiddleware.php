@@ -1,12 +1,13 @@
 <?php
 
+namespace App\Http\Middleware;
 
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Throwable;
 
-class MyPermissionMiddleware
+class MyPermissionsMiddleware
 {
     public function handle(Request $request, Closure $next, $permission, $guard = null)
     {
