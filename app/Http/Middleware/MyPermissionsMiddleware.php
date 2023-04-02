@@ -21,7 +21,7 @@ class MyPermissionsMiddleware
             : explode('|', $permission);
 
         try {
-            if ($user->hasPermissionTo('super-admin'))
+            if ($user->hasPermissionTo('super-admin', 'admin'))
                 return $next($request);
             foreach ($permissions as $permission) {
                 try {
