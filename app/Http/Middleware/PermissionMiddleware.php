@@ -32,6 +32,7 @@ class PermissionMiddleware
                     Permission::findByName($permission, 'admin');
                     if ($user->hasPermissionTo($permission)) return $next($request);
                 } catch (Throwable $e) {
+                    echo ($e);
                     Permission::create(["name" => $permission, 'guard_name' => 'admin']);
                     return  response()->json([
                         "message" => "You have the permission :: " . $permission,
