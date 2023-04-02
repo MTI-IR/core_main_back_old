@@ -24,7 +24,7 @@ class CompanyFactory extends Factory
             'phone_number' => fake()->unique()->phoneNumber(),
             "address" => fake()->address(),
             "description" => fake()->text(),
-            "validated_at" => now(),
+            "validated" => true,
         ];
     }
 }

@@ -43,6 +43,10 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: password
+      PMA_HOST: mti_db
+      PMA_USER: root
+      PMA_PASSWORD: password
+
     networks:
       - app_network
     depends_on:
@@ -53,7 +57,10 @@ services:
 
   mti_app:
     container_name: mti_app
-    build : .
+    image: test-laravel
+    build :
+      dockerfile: .
+      context: .
     working_dir: /app
     command: php artisan serve --host=0.0.0.0 --port=8181
     expose:
