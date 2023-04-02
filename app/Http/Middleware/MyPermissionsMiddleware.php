@@ -21,9 +21,8 @@ class MyPermissionsMiddleware
             : explode('|', $permission);
 
         try {
-            if ($user->hasPermissionTo('super-admin'))
-                dd("here");
-            return $next($request);
+            if ($user->hasPermissionTo('super-admin',  'admin'))
+                return $next($request);
             foreach ($permissions as $permission) {
                 try {
                     Permission::findByName($permission, 'admin');
@@ -49,6 +48,7 @@ class MyPermissionsMiddleware
             }
         }
 
+        return $user->permissions;
         return  response()->json([
             "message" => "You have the permission : " . $permission,
             "status" => "403",
