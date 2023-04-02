@@ -1,10 +1,11 @@
 <?php
 
+namespace App\Http\Middleware;
 
 use App\Models\User;
 use Closure;
 
-class RoleMiddleware
+class MyRoleMiddleware
 {
     public function handle($request, Closure $next, $role, $guard = null)
     {
@@ -16,18 +17,18 @@ class RoleMiddleware
             : explode('|', $role);
 
         try {
-            if ($user->hasPermissionTo('super-admin'))
+            if ($user->hasPermissionTo('super-admin', 'admin'))
                 return $next($request);
         } catch (Throwable $e) {
 
-            if ($user->hasAnyRole($roles)) {
+            if ($user->hasAnyRole($roles, 'admin')) {
                 return  response()->json([
                     "message" => "You have the needed role ",
                     "status" => "403",
                 ], 403);
             }
         }
-        if ($user->hasAnyRole($roles)) {
+        if ($user->hasAnyRole($roles, 'admin')) {
             return  response()->json([
                 "message" => "You have the needed role ",
                 "status" => "403",
