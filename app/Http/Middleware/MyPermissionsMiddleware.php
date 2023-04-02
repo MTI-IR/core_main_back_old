@@ -22,13 +22,13 @@ class MyPermissionsMiddleware
 
         try {
             if ($user->hasPermissionTo('super-admin'))
-                return $next($request);
+                dd("here");
+            return $next($request);
             foreach ($permissions as $permission) {
                 try {
                     Permission::findByName($permission, 'admin');
                     if ($user->hasPermissionTo($permission)) return $next($request);
                 } catch (Throwable $e) {
-                    echo ($e);
                     Permission::create(["name" => $permission, 'guard_name' => 'admin']);
                     return  response()->json([
                         "message" => "You have the permission :: " . $permission,
