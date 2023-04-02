@@ -48,7 +48,6 @@ class MyPermissionsMiddleware
             }
         }
 
-        dd("inja");
         return  response()->json([
             "message" => "You have the permission : " . $permission,
             "status" => "403",
