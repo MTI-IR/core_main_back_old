@@ -3,25 +3,24 @@ services:
 
   mti_db:
     container_name: mti_db
-    image: mysql/mysql-server:8.0
+    # image: mysql/mysql-server:5.7
+    # platform: linux/x86_64
+    image: mysql
     restart: unless-stopped
-    volumes:
-      - ./storage/db-data:/var/lib/mysql
     ports:
       - 3306:3306
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_DATABASE: mti_core_main
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_USER: root
+      # MYSQL_USER: root
       MYSQL_PASSWORD: password
     networks:
       - app_network
-    platform: linux/x86_64
-    volumes:
-        - ./storage/dbdata:/var/lib/mysql
+    # volumes:
+    #   - ./storage/dbdata:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 1s
       retries: 3
 
@@ -35,8 +34,6 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    links:
-      - mti_db
     ports:
       - 8001:80
     environment:
@@ -51,16 +48,16 @@ services:
       - app_network
     depends_on:
       mti_db:
-          condition: service_healthy
+        condition: service_healthy
     links:
       - mti_db
 
   mti_app:
     container_name: mti_app
     image: test-laravel
-    build :
-      dockerfile: .
-      context: .
+    # build:
+    # dockerfile: .
+    # context: .
     working_dir: /app
     command: php artisan serve --host=0.0.0.0 --port=8181
     expose:
@@ -72,9 +69,9 @@ services:
       - ./public:/app/public
     depends_on:
       mti_redis:
-          condition: service_started
+        condition: service_started
       mti_db:
-          condition: service_healthy
+        condition: service_healthy
     networks:
       - app_network
     ports:
@@ -83,9 +80,6 @@ services:
       - mti_db
       - mti_redis
 
-
-
 networks:
   app_network:
     driver: bridge
-
