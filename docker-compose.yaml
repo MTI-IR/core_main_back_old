@@ -3,8 +3,6 @@ services:
 
   mti_db:
     container_name: mti_db
-    # image: mysql/mysql-server:5.7
-    # platform: linux/x86_64
     image: mysql
     restart: unless-stopped
     ports:
@@ -17,8 +15,6 @@ services:
       MYSQL_PASSWORD: password
     networks:
       - app_network
-    # volumes:
-    #   - ./storage/dbdata:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 1s
